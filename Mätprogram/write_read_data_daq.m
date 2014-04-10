@@ -1,22 +1,24 @@
-function write_read_data_daq
+function [measurement_matrix, Time]=write_read_data_daq(number_of_points,start_voltage,stop_voltage,R)
 
+% sessionen ska tas bort ur koden efter att mätprogramdelen testats klart
 s = daq.createSession('ni')
-ai0=s.addAnalogInputChannel('cDAQ2Mod3',0,'Voltage')
+ai0=s.addAnalogInputChannel('cDAQ1Mod3',0,'Voltage')
 ai0.TerminalConfig = 'SingleEnded'
 
-ai1=s.addAnalogInputChannel('cDAQ2Mod3',1,'Voltage')
+ai1=s.addAnalogInputChannel('cDAQ1Mod3',1,'Voltage')
 ai1.TerminalConfig = 'SingleEnded'
 
-s.addAnalogOutputChannel('cDAQ2Mod1',0,'Voltage')
-s.addAnalogOutputChannel('cDAQ2Mod1',1,'Voltage')
+s.addAnalogOutputChannel('cDAQ1Mod1',0,'Voltage')
+s.addAnalogOutputChannel('cDAQ1Mod1',1,'Voltage')
 
-output_data = sin(linspace(0,2*pi,1000)');
+Time = linspace(start_voltage,stop_voltage, number_of_points)';
+output_data = Time+start_voltage;
 
 figure(1)
 plot(output_data);
 title('Output Data Queued');
 
-output_data2 = sin(linspace(0,4*pi,1000)');
+output_data2 =output_data;
 s.queueOutputData([output_data output_data2])
 figure(3)
 plot(output_data2);
@@ -34,6 +36,9 @@ plot(time,captured_data(:,2));
 ylabel('Voltage');
 xlabel('Time');
 title('Acquired Signal');
+
+measurement_matrix=captured_data;
+measurement_matrix(:,2)=measurement_matrix(:,2)/R;
 
 end
 

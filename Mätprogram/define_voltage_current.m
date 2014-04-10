@@ -1,23 +1,9 @@
-function [voltage current]=define_voltage_current(filename, area)
+function [voltage current]=define_voltage_current(measurement_matrix, area)
 
-measurement_matrix=daqread('filename');
+current=measurement_matrix(:,2)/(area);
 
-for i=1:length(measurment_matrix)
-measurement_matrix(i,2)= measurement_matrix(i,2)/(R*area);
-end 
-
-current=zeros(length(sample_matrix));
-
-for i=1:length(measurement_matrix)
-    current(i)=measurement_matrix(i,2);
-end
-
-voltage=zeros(length(measurement_matrix));
-
-for i=1:length(measurement_matrix)
-    voltage(i)=measurement_matrix(i,1);
-end
-
+voltage=measurement_matrix(:,1);
+%ta bort plotten sen
 plot(voltage,current);
 
 end
