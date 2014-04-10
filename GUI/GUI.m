@@ -23,7 +23,7 @@ function varargout = GUI(varargin)
 
 % Edit the above text to modify the response to help GUI
 
-% Last Modified by GUIDE v2.5 08-Apr-2014 16:10:25
+% Last Modified by GUIDE v2.5 10-Apr-2014 16:43:11
 
 
 % Begin initialization code - DO NOT EDIT
@@ -79,7 +79,7 @@ varargout{1} = handles.output;
 % --------------------------------------------------------------------
 function initialize_gui(fig_handle, handles, isreset)
 % 
-
+set_up_daq
 
 % Update handles structure
 guidata(handles.figure1, handles);
@@ -241,6 +241,38 @@ function Illuminated_area_edit_Callback(hObject, eventdata, handles)
 % --- Executes during object creation, after setting all properties.
 function Illuminated_area_edit_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to Illuminated_area_edit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in calibration_QE.
+function calibration_QE_Callback(hObject, eventdata, handles)
+% hObject    handle to calibration_QE (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of calibration_QE
+
+
+
+function Measure_time_Callback(hObject, eventdata, handles)
+% hObject    handle to Measure_time (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of Measure_time as text
+%        str2double(get(hObject,'String')) returns contents of Measure_time as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function Measure_time_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to Measure_time (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
