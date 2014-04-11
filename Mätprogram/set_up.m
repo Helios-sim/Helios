@@ -1,18 +1,21 @@
-function set_up_daq
+function set_up(handles)
+if(isEmpty(daq.getDevices))
+    error('There is no cDAQ module connected to the computer!');
+end
 
-daq.getDevices
-session=daq.createSession('ni')
+session = daq.createSession('ni');
+
 session.Rate = 100000;
 session.DurationInSeconds = 1;
 
 % Analog input
-ai0 = session.addAnalogInputChannel('cDAQ1Mod3','ai0','Voltage')
-ai1 = session.addAnalogInputChannel('cDAQ1Mod3','ai1','Voltage')
-ai2 = session.addAnalogInputChannel('cDAQ1Mod3','ai2','Voltage')
+ai0 = session.addAnalogInputChannel('cDAQ1Mod3','ai0','Voltage');
+ai1 = session.addAnalogInputChannel('cDAQ1Mod3','ai1','Voltage');
+ai2 = session.addAnalogInputChannel('cDAQ1Mod3','ai2','Voltage');
 
-ai0.TerminalConfig = 'SingleEnded'
-ai1.TerminalConfig = 'SingleEnded'
-ai2.TerminalConfig = 'SingleEnded'
+ai0.TerminalConfig = 'SingleEnded';
+ai1.TerminalConfig = 'SingleEnded';
+ai2.TerminalConfig = 'SingleEnded';
 
 %Digital output
 do0 = session.addDigitalChannel('cDAQ1Mod2','port0/line0','OutputOnly');
@@ -31,8 +34,8 @@ do12 = session.addDigitalChannel('cDAQ1Mod2','port0/line12','OutputOnly');
 do13 = session.addDigitalChannel('cDAQ1Mod2','port0/line13','OutputOnly');
 do14 = session.addDigitalChannel('cDAQ1Mod2','port0/line14','OutputOnly');
 do15 = session.addDigitalChannel('cDAQ1Mod2','port0/line15','OutputOnly');
-%Ytterst tveksam till om det funkar så här
-do16 = session.addDigitalChannel('cDAQ1Mod2','port0/line16:32','OutputOnly');
+%Ytterst tveksam till om den här funkar så här
+do_iv = session.addDigitalChannel('cDAQ1Mod2','port0/line16:32','OutputOnly');
 
 % Analog output
 ao0 = session.addAnalogOutputChannel('cDAQ1Mod1','ao0','Voltage');
@@ -51,6 +54,18 @@ ao12 = session.addAnalogOutputChannel('cDAQ1Mod1','ao12','Voltage');
 ao13 = session.addAnalogOutputChannel('cDAQ1Mod1','ao13','Voltage');
 ao14 = session.addAnalogOutputChannel('cDAQ1Mod1','ao14','Voltage');
 ao15 = session.addAnalogOutputChannel('cDAQ1Mod1','ao15','Voltage');
+
+%setting up the rest of the user data and storing everything in the gui
+%appdata
+handles.session = session;
+handles.measure_time = 1000;
+handles.from_iv = 0;
+handles.to_iv = 1;
+handles.step_iv = 1;
+handles.chosen_spectrum = [];
+handles.illuminated_area = 1;
+handles.measurement_type = 'specificSpectrum';
+handles.quantum_spectrum = [];
 
 end
 

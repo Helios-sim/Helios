@@ -53,7 +53,9 @@ function GUI_OpeningFcn(hObject, eventdata, handles, varargin)
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to GUI (see VARARGIN)
 
+set_up(handles); %set up per scan or per executable run?
 % Choose default command line output for GUI
+
 handles.output = hObject;
 
 % Update handles structure
@@ -75,22 +77,19 @@ function varargout = GUI_OutputFcn(hObject, eventdata, handles)
 % Get default command line output from handles structure
 varargout{1} = handles.output;
 
-
 % --------------------------------------------------------------------
 function initialize_gui(fig_handle, handles, isreset)
 % 
-set_up_daq
-
 % Update handles structure
 guidata(handles.figure1, handles);
-
 
 % --- Executes on button press in Measure_QE_button.
 function Measure_QE_button_Callback(hObject, eventdata, handles)
 % hObject    handle to Measure_QE_button (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
+setappdata(handles.figure1,'measurement_type','QuantumEfficiency');
+setappdata(handles.figure1,'chosen_spectrum',getappdata(handles.figure1,'QE_spectrum'));
 % Hint: get(hObject,'Value') returns toggle state of Measure_QE_button
 
 
@@ -99,10 +98,7 @@ function Measure_spectrum_Callback(hObject, eventdata, handles)
 % hObject    handle to Measure_spectrum (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
- measure_specified_spectrum(); %Dummy-funktion för tankehjälp
- 
-
+setappdata(handles.figure1,'measurement_type','SpecificSpectrum');
 % Hint: get(hObject,'Value') returns toggle state of Measure_spectrum
 
 
@@ -111,7 +107,7 @@ function Measure_IV_curve_Callback(hObject, eventdata, handles)
 % hObject    handle to Measure_IV_curve (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
+setappdata(handles.figure1,'measurement_type','IVCurve');
 % Hint: get(hObject,'Value') returns toggle state of Measure_IV_curve
 
 
@@ -120,6 +116,16 @@ function Start_measurement_Callback(hObject, eventdata, handles)
 % hObject    handle to Start_measurement (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+switch(getappdata(handles.figure1,'measurement_type'))
+    case('specificSpectrum')
+        
+    case('IVCurve')
+    
+    case('QuantumEfficiency')
+        
+    otherwise
+        return;
+end
 
 
 % --- Executes on button press in Help_button.
@@ -134,6 +140,11 @@ function Chosen_spektrum_Callback(hObject, eventdata, handles)
 % hObject    handle to Chosen_spektrum (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+contents = cellstr(get(hObject,'String'));
+spectrum = load(contents{get(Hobject,'Value')} + '.m','Data');
+
+%använd filnamn i drop-down-listan?
+setappdata(handles.figure1,'chosen_spectrum',spectrum);
 
 % Hints: contents = cellstr(get(hObject,'String')) returns Chosen_spektrum contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from Chosen_spektrum
@@ -151,12 +162,12 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
-
 % --- Executes on button press in Create_spectrum.
 function Create_spectrum_Callback(hObject, eventdata, handles)
 % hObject    handle to Create_spectrum (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
 
 
 
@@ -269,8 +280,8 @@ function Measure_time_Callback(hObject, eventdata, handles)
 % Hints: get(hObject,'String') returns contents of Measure_time as text
 %        str2double(get(hObject,'String')) returns contents of Measure_time as a double
 
-
 % --- Executes during object creation, after setting all properties.
+
 function Measure_time_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to Measure_time (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
