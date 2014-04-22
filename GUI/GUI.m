@@ -53,7 +53,7 @@ function GUI_OpeningFcn(hObject, eventdata, handles, varargin)
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to GUI (see VARARGIN)
 
-set_up(handles); %set up per scan or per executable run?
+%set_up(handles); %set up per scan or per executable run?
 % Choose default command line output for GUI
 
 handles.output = hObject;
