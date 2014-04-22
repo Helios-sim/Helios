@@ -116,13 +116,14 @@ function Start_measurement_Callback(hObject, eventdata, handles)
 % hObject    handle to Start_measurement (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-switch(getappdata(handles.figure1,'measurement_type'))
+switchCase = getappdata(handles.figure1,'measurement_type'); 
+switch(switchCase)
     case('specificSpectrum')
-        
+        error('measuring specific spectrum')
     case('IVCurve')
-    
+        error('measuring IV-curve')
     case('QuantumEfficiency')
-        
+        error('measuring quantum efficiency')
     otherwise
         return;
 end

@@ -1,7 +1,7 @@
 function set_up(handles)
-if(isEmpty(daq.getDevices))
-    error('There is no cDAQ module connected to the computer!');
-end
+% if(isEmpty(daq.getDevices))
+%     error('There is no cDAQ module connected to the computer!');
+% end
 
 session = daq.createSession('ni');
 
