@@ -36,7 +36,7 @@ end
 efficient_PKS = filtered_PKS./input_data(:,2);
 
 QE(:,1) = efficient_PKS;
-QE(:,2) = LOCS;
+QE(:,2) = input_data(:,1);
 
 delete(s);
 
