@@ -23,7 +23,7 @@ function varargout = GUI(varargin)
 
 % Edit the above text to modify the response to help GUI
 
-% Last Modified by GUIDE v2.5 10-Apr-2014 16:43:11
+% Last Modified by GUIDE v2.5 30-Apr-2014 15:50:14
 
 
 % Begin initialization code - DO NOT EDIT
@@ -53,11 +53,9 @@ function GUI_OpeningFcn(hObject, eventdata, handles, varargin)
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to GUI (see VARARGIN)
 
-%set_up(handles); %set up per scan or per executable run?
-% Choose default command line output for GUI
-
 handles.output = hObject;
 
+set_up(hObject, handles);
 % Update handles structure
 guidata(hObject, handles);
 
@@ -88,8 +86,17 @@ function Measure_QE_button_Callback(hObject, eventdata, handles)
 % hObject    handle to Measure_QE_button (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+guidata(handles.figure1, handles);
+
+button_state = get(hObject, 'Value');
+if button_state == get(hObject, 'Max')
 setappdata(handles.figure1,'measurement_type','QuantumEfficiency');
-setappdata(handles.figure1,'chosen_spectrum',getappdata(handles.figure1,'QE_spectrum'));
+set(handles.Measure_QE_button,'Value',get(hObject, 'Max'));
+set(handles.Measure_spectrum,'Value',get(hObject, 'Min'));
+% other_button = guidata(handles.Measure_spectrum);
+% other_button.Value = get(hObject, 'Min');
+% guidata(handles.Measure_spectrum, other_button);
+end
 % Hint: get(hObject,'Value') returns toggle state of Measure_QE_button
 
 
@@ -98,32 +105,34 @@ function Measure_spectrum_Callback(hObject, eventdata, handles)
 % hObject    handle to Measure_spectrum (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-setappdata(handles.figure1,'measurement_type','SpecificSpectrum');
+guidata(handles.figure1, handles);
+
+button_state = get(hObject, 'Value');
+if button_state == get(hObject, 'Max')
+setappdata(handles.figure1,'measurement_type','specificSpectrum');
+set(handles.Measure_spectrum,'Value',get(hObject, 'Max'));
+set(handles.Measure_QE_button,'Value',get(hObject, 'Min'));
+% other_button = guidata(handles.Measure_QE_button);
+% other_button.Value = get(hObject, 'Min');
+% guidata(handles.Measure_QE_button, other_button);
+end
 % Hint: get(hObject,'Value') returns toggle state of Measure_spectrum
-
-
-% --- Executes on button press in Measure_IV_curve.
-function Measure_IV_curve_Callback(hObject, eventdata, handles)
-% hObject    handle to Measure_IV_curve (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-setappdata(handles.figure1,'measurement_type','IVCurve');
-% Hint: get(hObject,'Value') returns toggle state of Measure_IV_curve
-
 
 % --- Executes on button press in Start_measurement.
 function Start_measurement_Callback(hObject, eventdata, handles)
 % hObject    handle to Start_measurement (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+guidata(handles.figure1, handles);
+
 switchCase = getappdata(handles.figure1,'measurement_type'); 
 switch(switchCase)
     case('specificSpectrum')
-        error('measuring specific spectrum')
-    case('IVCurve')
-        error('measuring IV-curve')
+        disp('Woah, a specific spectrum!')
+        Output_spectrum(handles)
     case('QuantumEfficiency')
-        error('measuring quantum efficiency')
+        disp('Woah, a quantum efficiency!')
+        Output_quantum_vibrations;
     otherwise
         return;
 end
@@ -134,6 +143,7 @@ function Help_button_Callback(hObject, eventdata, handles)
 % hObject    handle to Help_button (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+disp('Den här knappen gör inte så mycket än.')
 
 
 % --- Executes on selection change in Chosen_spektrum.
@@ -141,11 +151,13 @@ function Chosen_spektrum_Callback(hObject, eventdata, handles)
 % hObject    handle to Chosen_spektrum (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+guidata(handles.figure1, handles);
+
 contents = cellstr(get(hObject,'String'));
-spectrum = load(contents{get(Hobject,'Value')} + '.m','Data');
+spectrum = load(strcat(contents{get(Hobject,'Value')},'.m'));
 
 %använd filnamn i drop-down-listan?
-setappdata(handles.figure1,'chosen_spectrum',spectrum);
+setappdata(handles.figure1,'chosen_spectrum', spectrum);
 
 % Hints: contents = cellstr(get(hObject,'String')) returns Chosen_spektrum contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from Chosen_spektrum
@@ -285,6 +297,29 @@ function Measure_time_Callback(hObject, eventdata, handles)
 
 function Measure_time_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to Measure_time (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function R_edit_Callback(hObject, eventdata, handles)
+% hObject    handle to R_edit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of R_edit as text
+%        str2double(get(hObject,'String')) returns contents of R_edit as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function R_edit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to R_edit (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
