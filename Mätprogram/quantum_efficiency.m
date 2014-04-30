@@ -1,11 +1,12 @@
-function QE=quantum_efficiency()
+function QE=quantum_efficiency(input_data)
 
-s = daq.createSession('ni')
-s.Rate = 100000
+%Ska få in en matris innehållandes olika frekvenser samt deras spänning.
+%Kanske ta bort skapande/borttagning sessionerna, skicka in session som invariabel i så fall.
+
+s = daq.createSession('ni');
+s.Rate = 100000;
 ai0=s.addAnalogInputChannel('cDAQ1Mod3',0,'Voltage');
 ai0.TerminalConfig = 'SingleEnded';
-ai1=s.addAnalogInputChannel('cDAQ1Mod3',1,'Voltage');
-ai1.TerminalConfig = 'SingleEnded';
 
 Fs=100000;
 L=100000; 
@@ -13,22 +14,30 @@ L=100000;
 
 
 Y=fft(captured_data(:,1))/L;
-Y1=fft(captured_data(:,2))/L;
 f=linspace(0,Fs/2,Fs/2);
 figure
 plot(f,2*abs(Y(1:L/2)));
-figure
-plot(f,2*abs(Y1(1:L/2)));
 
 [PKS,LOCS] = findpeaks(abs(Y),'THRESHOLD',0.05);
-PKS*2/1.22
-LOCS
+PKS*2/1.22;
+LOCS;
 
-val = 40000;
-tmp = abs(f-val);
-[idx idx] = min(tmp)
-true_value = 2*abs(Y(idx))/1.22
-another_value = 2*abs(Y(idx + 1))/1.22
+filtered_PKS = zeros(length(input_data(:,1)));
 
-Qe=1;
+for i=1:length(input_data(:,1))
+    index = find(LOCS, input_data(i,1));
+    filtered_PKS(i) = PKS(index);
+end
+    
+%Måste finna amplituderna vid de inskickade frekvenserna, räkna ström,
+%dividera med varje inskickat värde med matchande frekvens. Sätt detta som
+%QE.
+
+efficient_PKS = filtered_PKS./input_data(:,2);
+
+QE(:,1) = efficient_PKS;
+QE(:,2) = input_data(:,1);
+
+delete(s);
+
 end
