@@ -4,7 +4,7 @@ function process_data(data, timestamps, handles)
 
 % voltage = data(:,1);
 % current = convert_to_current(data(:,2), getappdata(handles.figure1,'R'));
-guidata(handles.figure1, handles);
+handles = guidata(handles.figure1);
 switchCase = getappdata(handles.figure1, 'measurement_type'); 
 
 switch(switchCase)
@@ -22,13 +22,17 @@ switch(switchCase)
             set(handles.FF_sign,'String',num2str(FF));
             
             axes(handles.axes1);
-            plot(timestamps,voltage);
-            plot(timestamps,current);
-            guidata(handles.figure1, handles);
+            plot(voltage,current);
        % plot(timestamps,data(:,3));
     case('QuantumEfficiency')
-        %Do other stuff here, uses time;
+        %testing
+        session = getappdata(handles.figure1,'session');
+        [strommatris, frekvenser] = createSquareWave(length(data), session.Rate);
+        S = sum(strommatris,2);
+        matdata = [ones(length(data),1), S];
+        quantum_efficiency(matdata, handles);
     otherwise
         return;
 end
+guidata(handles.figure1, handles);
 end

@@ -52,9 +52,8 @@ function GUI_OpeningFcn(hObject, eventdata, handles, varargin)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to GUI (see VARARGIN)
-
+handles = guidata(handles.figure1);
 handles.output = hObject;
-
 set_up(hObject, handles);
 % Update handles structure
 guidata(hObject, handles);
@@ -79,6 +78,7 @@ varargout{1} = handles.output;
 function initialize_gui(fig_handle, handles, isreset)
 % 
 % Update handles structure
+handles = guidata(handles.figure1);
 guidata(handles.figure1, handles);
 
 % --- Executes on button press in Measure_QE_button.
@@ -86,16 +86,16 @@ function Measure_QE_button_Callback(hObject, eventdata, handles)
 % hObject    handle to Measure_QE_button (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-guidata(handles.figure1, handles);
+handles = guidata(handles.figure1);
+
 
 button_state = get(hObject, 'Value');
 if button_state == get(hObject, 'Max')
 setappdata(handles.figure1,'measurement_type','QuantumEfficiency');
 set(handles.Measure_QE_button,'Value',get(hObject, 'Max'));
 set(handles.Measure_spectrum,'Value',get(hObject, 'Min'));
-% other_button = guidata(handles.Measure_spectrum);
-% other_button.Value = get(hObject, 'Min');
-% guidata(handles.Measure_spectrum, other_button);
+
+guidata(handles.figure1, handles);
 end
 % Hint: get(hObject,'Value') returns toggle state of Measure_QE_button
 
@@ -105,16 +105,15 @@ function Measure_spectrum_Callback(hObject, eventdata, handles)
 % hObject    handle to Measure_spectrum (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-guidata(handles.figure1, handles);
+handles = guidata(handles.figure1);
 
 button_state = get(hObject, 'Value');
 if button_state == get(hObject, 'Max')
 setappdata(handles.figure1,'measurement_type','specificSpectrum');
 set(handles.Measure_spectrum,'Value',get(hObject, 'Max'));
 set(handles.Measure_QE_button,'Value',get(hObject, 'Min'));
-% other_button = guidata(handles.Measure_QE_button);
-% other_button.Value = get(hObject, 'Min');
-% guidata(handles.Measure_QE_button, other_button);
+
+guidata(handles.figure1, handles);
 end
 % Hint: get(hObject,'Value') returns toggle state of Measure_spectrum
 
@@ -123,7 +122,7 @@ function Start_measurement_Callback(hObject, eventdata, handles)
 % hObject    handle to Start_measurement (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-guidata(handles.figure1, handles);
+handles = guidata(handles.figure1);
 
 switchCase = getappdata(handles.figure1,'measurement_type'); 
 switch(switchCase)
@@ -132,10 +131,11 @@ switch(switchCase)
         Output_spectrum(handles)
     case('QuantumEfficiency')
         disp('Woah, a quantum efficiency!')
-        Output_quantum_vibrations;
+        Output_quantum_vibrations(handles);
     otherwise
         return;
 end
+guidata(handles.figure1, handles);
 
 
 % --- Executes on button press in Help_button.
@@ -151,17 +151,17 @@ function Chosen_spektrum_Callback(hObject, eventdata, handles)
 % hObject    handle to Chosen_spektrum (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-guidata(handles.figure1, handles);
+handles = guidata(handles.figure1);
 
 contents = cellstr(get(hObject,'String'));
-spectrum = load(strcat(contents{get(Hobject,'Value')},'.m'));
+filename = strcat(contents{get(Hobject,'Value')},'.m');
+spectrum = load(filename, contents{get(Hobject,'Value')});
 
 %använd filnamn i drop-down-listan?
 setappdata(handles.figure1,'chosen_spectrum', spectrum);
-
+guidata(handles.figure1, handles);
 % Hints: contents = cellstr(get(hObject,'String')) returns Chosen_spektrum contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from Chosen_spektrum
-
 
 % --- Executes during object creation, after setting all properties.
 function Chosen_spektrum_CreateFcn(hObject, eventdata, handles)
@@ -182,8 +182,6 @@ function Create_spectrum_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 
-
-
 function From_IV_edit_Callback(hObject, eventdata, handles)
 % hObject    handle to From_IV_edit (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -191,7 +189,9 @@ function From_IV_edit_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of From_IV_edit as text
 %        str2double(get(hObject,'String')) returns contents of From_IV_edit as a double
-
+handles = guidata(handles.figure1);
+setappdata(handles.figure1, 'from_iv', str2double(get(hObject,'String')));
+guidata(handles.figure1, handles);
 
 % --- Executes during object creation, after setting all properties.
 function From_IV_edit_CreateFcn(hObject, eventdata, handles)
@@ -206,7 +206,6 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-
 function To_IV_edit_Callback(hObject, eventdata, handles)
 % hObject    handle to To_IV_edit (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -214,7 +213,9 @@ function To_IV_edit_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of To_IV_edit as text
 %        str2double(get(hObject,'String')) returns contents of To_IV_edit as a double
-
+handles = guidata(handles.figure1);
+setappdata(handles.figure1, 'to_iv', str2double(get(hObject,'String')));
+guidata(handles.figure1, handles);
 
 % --- Executes during object creation, after setting all properties.
 function To_IV_edit_CreateFcn(hObject, eventdata, handles)
@@ -229,7 +230,6 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-
 function Step_IV_edit_Callback(hObject, eventdata, handles)
 % hObject    handle to Step_IV_edit (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -237,7 +237,9 @@ function Step_IV_edit_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of Step_IV_edit as text
 %        str2double(get(hObject,'String')) returns contents of Step_IV_edit as a double
-
+handles = guidata(handles.figure1);
+setappdata(handles.figure1, 'step_iv', str2double(get(hObject,'String')));
+guidata(handles.figure1, handles);
 
 % --- Executes during object creation, after setting all properties.
 function Step_IV_edit_CreateFcn(hObject, eventdata, handles)
@@ -252,7 +254,6 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-
 function Illuminated_area_edit_Callback(hObject, eventdata, handles)
 % hObject    handle to Illuminated_area_edit (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -260,7 +261,9 @@ function Illuminated_area_edit_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of Illuminated_area_edit as text
 %        str2double(get(hObject,'String')) returns contents of Illuminated_area_edit as a double
-
+handles = guidata(handles.figure1);
+setappdata(handles.figure1, 'illuminated_area', str2double(get(hObject,'String')));
+guidata(handles.figure1, handles);
 
 % --- Executes during object creation, after setting all properties.
 function Illuminated_area_edit_CreateFcn(hObject, eventdata, handles)
@@ -274,26 +277,12 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
-
 % --- Executes on button press in calibration_QE.
 function calibration_QE_Callback(hObject, eventdata, handles)
 % hObject    handle to calibration_QE (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
 % Hint: get(hObject,'Value') returns toggle state of calibration_QE
-
-
-
-function Measure_time_Callback(hObject, eventdata, handles)
-% hObject    handle to Measure_time (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of Measure_time as text
-%        str2double(get(hObject,'String')) returns contents of Measure_time as a double
-
-% --- Executes during object creation, after setting all properties.
 
 function Measure_time_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to Measure_time (see GCBO)
@@ -307,7 +296,6 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-
 function R_edit_Callback(hObject, eventdata, handles)
 % hObject    handle to R_edit (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -315,7 +303,9 @@ function R_edit_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of R_edit as text
 %        str2double(get(hObject,'String')) returns contents of R_edit as a double
-
+handles = guidata(handles.figure1);
+setappdata(handles.figure1, 'R', str2double(get(hObject,'String')));
+guidata(handles.figure1, handles);
 
 % --- Executes during object creation, after setting all properties.
 function R_edit_CreateFcn(hObject, eventdata, handles)

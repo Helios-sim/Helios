@@ -1,9 +1,22 @@
 function Output_quantum_vibrations(handles)
-voltage = [handles.from_iv:handles.step_iv:handles.to_iv, 1];
-spectrum = (handles.quantum_spectrum).*ones(length(voltage),16);
-frequency_matrix = create_frequency_matrix(handles.frequencies, number_of_scans);
+session = getappdata(handles.figure1,'session');
+spec_session = getappdata(handles.figure1, 'spec_session');
+appdata = getappdata(handles.figure1);
+datastep = session.Rate;
+supply_voltage = 1;
 
-handles.session.queueOutputData([frequency_matrix de2bi(voltage) spectrum]);
-handles.session.startBackground;
+voltage = supply_voltage*ones(datastep,1);
+quantum_spectrum = appdata.quantum_spectrum;
+spectrum = ones(1,datastep)'*(quantum_spectrum(1:15));
+spec_session.outputSingleScan([quantum_spectrum(16)]);
+
+[led_power, quantum_matrix] = createSquareWave(datastep, session.Rate);
+setappdata(handles.figure1, 'quantum_matrix', quantum_matrix);
+Data = [led_power, voltage, spectrum];
+session.queueOutputData(Data);
+session.prepare;
+[measure_data, timestamps, triggerTime] = session.startForeground;
+guidata(handles.figure1, handles);
+process_data(measure_data, timestamps, handles)
 end
 

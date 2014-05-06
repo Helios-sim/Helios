@@ -5,7 +5,8 @@ function set_up(hObject, handles)
 guidata(handles.figure1, handles);
 
 session = daq.createSession('ni');
-session.Rate = 25000;
+spec_session = daq.createSession('ni');
+session.Rate = 20000;
 
 %Digital output
 session.addDigitalChannel('cDAQ1Mod2','port0/line0','OutputOnly');
@@ -24,8 +25,9 @@ session.addDigitalChannel('cDAQ1Mod2','port0/line12','OutputOnly');
 session.addDigitalChannel('cDAQ1Mod2','port0/line13','OutputOnly');
 session.addDigitalChannel('cDAQ1Mod2','port0/line14','OutputOnly');
 session.addDigitalChannel('cDAQ1Mod2','port0/line15','OutputOnly');
-%Ytterst tveksam till om den här funkar så här
-session.addDigitalChannel('cDAQ1Mod2','port0/line16:31','OutputOnly');
+
+%styrspänning över solcell för IV-mätning
+session.addAnalogOutputChannel('cDAQ1Mod1','ao15','Voltage');
 
 % Analog output
 session.addAnalogOutputChannel('cDAQ1Mod1','ao0','Voltage');
@@ -43,14 +45,17 @@ session.addAnalogOutputChannel('cDAQ1Mod1','ao11','Voltage');
 session.addAnalogOutputChannel('cDAQ1Mod1','ao12','Voltage');
 session.addAnalogOutputChannel('cDAQ1Mod1','ao13','Voltage');
 session.addAnalogOutputChannel('cDAQ1Mod1','ao14','Voltage');
-session.addAnalogOutputChannel('cDAQ1Mod1','ao15','Voltage');
+ %to enable the use of the 16th analog channel to control the voltage over
+ %the solar cell.
+ 
+spec_session.addAnalogOutputChannel('Dev1','ao0','Voltage');       
 
 % Analog input
 ai0 = session.addAnalogInputChannel('cDAQ1Mod3','ai0','Voltage');
 ai1 = session.addAnalogInputChannel('cDAQ1Mod3','ai1','Voltage');
 
 %for testing purposes
-ai2 = session.addAnalogInputChannel('cDAQ1Mod3','ai2','Voltage');
+%ai2 = session.addAnalogInputChannel('cDAQ1Mod3','ai2','Voltage');
 
 ai0.TerminalConfig = 'SingleEnded';
 ai1.TerminalConfig = 'SingleEnded';
@@ -62,9 +67,10 @@ session.addlistener('ErrorOccurred', errorhandle);
 %setting up the rest of the user data and storing everything in the gui
 %appdata
 setappdata(handles.figure1, 'session', session);
+setappdata(handles.figure1, 'spec_session', spec_session);
 setappdata(handles.figure1, 'from_iv', 0);
-setappdata(handles.figure1, 'to_iv', 25000);
-setappdata(handles.figure1, 'step_iv', 300);
+setappdata(handles.figure1, 'to_iv', 5);
+setappdata(handles.figure1, 'step_iv', 16384);
 setappdata(handles.figure1, 'Jsc', 1);
 setappdata(handles.figure1, 'Voc', 1);
 setappdata(handles.figure1, 'FF', 1);

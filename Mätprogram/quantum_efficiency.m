@@ -1,43 +1,49 @@
-function QE=quantum_efficiency(input_data)
+function QE=quantum_efficiency(data, handles)
 
 %Ska få in en matris innehållandes olika frekvenser samt deras spänning.
 %Kanske ta bort skapande/borttagning sessionerna, skicka in session som invariabel i så fall.
+handles = guidata(handles.figure1);
 
-s = daq.createSession('ni');
-s.Rate = 100000;
-ai0=s.addAnalogInputChannel('cDAQ1Mod3',0,'Voltage');
-ai0.TerminalConfig = 'SingleEnded';
+session = getappdata(handles.figure1, 'session');
+voltage = data(:,1);
+current = data(:,2);
+L = length(voltage);
+Fs = session.Rate;
 
-Fs=100000;
-L=100000; 
-[captured_data,time] = s.startForeground();
+figure(1)
+plot(current)
 
+figure(2)
+Y=abs(fft(current)/Fs);
+plot(Y)
 
-Y=fft(captured_data(:,1))/L;
-f=linspace(0,Fs/2,Fs/2);
-figure
-plot(f,2*abs(Y(1:L/2)));
+frequencies = getappdata(handles.figure1, 'quantum_matrix')';
 
-[PKS,LOCS] = findpeaks(abs(Y),'THRESHOLD',0.05);
-PKS*2/1.22;
-LOCS;
+[PKS, LOCS] = findpeaks(abs(Y),'THRESHOLD', 0.001);
 
-filtered_PKS = zeros(length(input_data(:,1)));
-
-for i=1:length(input_data(:,1))
-    index = find(LOCS, input_data(i,1));
-    filtered_PKS(i) = PKS(index);
+%Something is fishy here...
+filtered_PKS = zeros(1,16);
+for i = 1:16
+    tmp = abs(LOCS - frequencies(i));
+    [~, idx] = min(tmp);
+    if length(idx) > 1
+       idx = idx(1); 
+    end
+    PKS(idx);
+    filtered_PKS(1,i) = PKS(idx);
 end
-    
+
 %Måste finna amplituderna vid de inskickade frekvenserna, räkna ström,
 %dividera med varje inskickat värde med matchande frekvens. Sätt detta som
 %QE.
 
-efficient_PKS = filtered_PKS./input_data(:,2);
+QE = filtered_PKS./getappdata(handles.figure1, 'quantum_spectrum');
 
-QE(:,1) = efficient_PKS;
-QE(:,2) = input_data(:,1);
+axes(handles.axes1);
+plot(frequencies, filtered_PKS);
 
-delete(s);
-
+set(handles.Efficiency_sign,'String', 'N/A');
+set(handles.Jsc_sign,'String', 'N/A');
+set(handles.Voc_sign,'String', 'N/A');
+set(handles.FF_sign,'String', 'N/A');
 end
