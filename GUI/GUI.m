@@ -143,7 +143,14 @@ function Help_button_Callback(hObject, eventdata, handles)
 % hObject    handle to Help_button (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-disp('Den här knappen gör inte så mycket än.')
+
+%checks if user manual excists and opens it, otherwise displays an error
+%message
+   if exist('user_manual.pdf', 'file')==2
+     open('user_manual.pdf');
+   else
+    disp('Användarmanualen kunde inte öppnas');
+   end
 
 
 % --- Executes on selection change in Chosen_spektrum.
@@ -193,6 +200,23 @@ handles = guidata(handles.figure1);
 setappdata(handles.figure1, 'from_iv', str2double(get(hObject,'String')));
 guidata(handles.figure1, handles);
 
+from_iv=getappdata(handles.figure1, 'from_iv');
+%checks if the given intervall is ok
+if from_iv<-5 
+    disp('Du har valt ett otillåtet intervall, spänningen sätts automatiskt till -5 V');
+    handles = guidata(handles.figure1);
+    setappdata(handles.figure1,'from_iv', -5);
+    set(handles.From_IV_edit,'String','-5');
+    guidata(handles.figure1, handles);
+elseif from_iv>= getappdata(handles.figure1,'to_iv')
+    disp('startintervallet börjar efter slutintervallet, startintervallet sätts nu automatiskt till -5');
+    handles = guidata(handles.figure1);
+    setappdata(handles.figure1,'from_iv', -5);
+    set(handles.From_IV_edit,'String','-5');
+    guidata(handles.figure1, handles);
+end
+
+
 % --- Executes during object creation, after setting all properties.
 function From_IV_edit_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to From_IV_edit (see GCBO)
@@ -216,6 +240,18 @@ function To_IV_edit_Callback(hObject, eventdata, handles)
 handles = guidata(handles.figure1);
 setappdata(handles.figure1, 'to_iv', str2double(get(hObject,'String')));
 guidata(handles.figure1, handles);
+to_iv=getappdata(handles.figure1,'to_iv');
+if to_iv>15
+    disp('Du har valt ett otillåtet intervall,slutspänningen sätts nu automatiskt till 15');
+    setappdata(handles.figure1, 'to_iv', 15);
+    set(handles.To_IV_edit,'String','15');
+    guidata(handles.figure1, handles);
+elseif to_iv <=getappdata(handles.figure1,'from_iv')
+    disp('Din slutspänning är mindre än din startspänningen, slutspänningen sätts nu till 15');
+    setappdata(handles.figure1, 'to_iv', 15);
+    set(handles.To_IV_edit,'String','15');
+    guidata(handles.figure1, handles);
+end
 
 % --- Executes during object creation, after setting all properties.
 function To_IV_edit_CreateFcn(hObject, eventdata, handles)
@@ -240,6 +276,16 @@ function Step_IV_edit_Callback(hObject, eventdata, handles)
 handles = guidata(handles.figure1);
 setappdata(handles.figure1, 'step_iv', str2double(get(hObject,'String')));
 guidata(handles.figure1, handles);
+if str2double(get(hObject,'String'))<=0
+    disp('du har matat in en steglängd som inte går att använda, steglängden sätts nu automatiskt till 100');
+    setappdata(handles.figure1, 'step_iv', 100);
+    guidata(handles.figure1, handles);
+elseif ~mod(str2double(get(hObject,'String')),1)==0
+    disp('du har matat in en steglängd som inte är ett heltal, steglängden sätts nu automatiskt till 100'); 
+    setappdata(handles.figure1, 'step_iv', 100);
+    guidata(handles.figure1, handles);
+end
+
 
 % --- Executes during object creation, after setting all properties.
 function Step_IV_edit_CreateFcn(hObject, eventdata, handles)
@@ -264,6 +310,11 @@ function Illuminated_area_edit_Callback(hObject, eventdata, handles)
 handles = guidata(handles.figure1);
 setappdata(handles.figure1, 'illuminated_area', str2double(get(hObject,'String')));
 guidata(handles.figure1, handles);
+if getappdata(handles.figure1,'illuminated_area')<=0
+    disp('den belysta ytan kan inte vara mindre än 0, mata in korrekt area annars används arean 10');
+    setappdata(handles.figure1, 'illuminated_area', 10);
+    guidata(handles.figure1, handles);
+end
 
 % --- Executes during object creation, after setting all properties.
 function Illuminated_area_edit_CreateFcn(hObject, eventdata, handles)
@@ -306,6 +357,11 @@ function R_edit_Callback(hObject, eventdata, handles)
 handles = guidata(handles.figure1);
 setappdata(handles.figure1, 'R', str2double(get(hObject,'String')));
 guidata(handles.figure1, handles);
+if getappdata(handles.figure1,'R')<=0
+    disp('Resistansen måste vara större än 0, mata in korrekt värde annars används R=1');
+    setappdata(handles.figure1, 'R', 1);
+    guidata(handles.figure1, handles);
+end
 
 % --- Executes during object creation, after setting all properties.
 function R_edit_CreateFcn(hObject, eventdata, handles)
