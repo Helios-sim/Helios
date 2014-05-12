@@ -7,25 +7,25 @@ handles = guidata(handles.figure1);
 session = getappdata(handles.figure1, 'session');
 voltage = data(:,1);
 current = data(:,2);
-L = length(voltage);
-Fs = session.Rate;
+L = length(voltage)
+Fs = session.Rate
 
 figure(1)
-plot(current)
+plot(voltage)
 
-figure(2)
+w=flattopwin(length(current),'periodic');
+
 Y=abs(fft(current)/Fs);
-plot(Y)
 
-frequencies = getappdata(handles.figure1, 'quantum_matrix')';
+frequencies = getappdata(handles.figure1, 'quantum_matrix')'
 
-[PKS, LOCS] = findpeaks(abs(Y),'THRESHOLD', 0.001);
+[PKS, LOCS] = findpeaks(abs(Y),'THRESHOLD', 0.02);
 
 %Something is fishy here...
 filtered_PKS = zeros(1,16);
 for i = 1:16
     tmp = abs(LOCS - frequencies(i));
-    [~, idx] = min(tmp);
+    [~, idx] = min(tmp + 1);
     if length(idx) > 1
        idx = idx(1); 
     end
@@ -37,12 +37,17 @@ end
 %dividera med varje inskickat värde med matchande frekvens. Sätt detta som
 %QE.
 
-QE = filtered_PKS./getappdata(handles.figure1, 'quantum_spectrum');
+QE = round((100*pi)*(filtered_PKS./getappdata(handles.figure1, 'quantum_spectrum')));
 
 axes(handles.axes1);
-plot(frequencies, filtered_PKS);
+plot(frequencies, QE);
+axis([290 460 0 110]);
 
-set(handles.Efficiency_sign,'String', 'N/A');
+figure(2)
+plot(Y)
+axis([280 470 0 max(filtered_PKS)]);
+
+set(handles.Efficiency_sign,'String', num2str(round(mean(QE))));
 set(handles.Jsc_sign,'String', 'N/A');
 set(handles.Voc_sign,'String', 'N/A');
 set(handles.FF_sign,'String', 'N/A');

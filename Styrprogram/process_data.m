@@ -28,8 +28,15 @@ switch(switchCase)
         %testing
         session = getappdata(handles.figure1,'session');
         [strommatris, frekvenser] = createSquareWave(length(data), session.Rate);
+        quantum_matrix = getappdata(handles.figure1, 'quantum_spectrum');
+        for i = 1:16
+        strommatris(:,i) = quantum_matrix(1,i)*strommatris(:,i);
+        end
         S = sum(strommatris,2);
-        matdata = [ones(length(data),1), S];
+        
+        a=ones(length(data),1);
+        a(1:length(data)/2)=2;
+        matdata = [a, S];
         quantum_efficiency(matdata, handles);
     otherwise
         return;

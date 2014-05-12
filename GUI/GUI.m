@@ -276,14 +276,21 @@ function Step_IV_edit_Callback(hObject, eventdata, handles)
 handles = guidata(handles.figure1);
 setappdata(handles.figure1, 'step_iv', str2double(get(hObject,'String')));
 guidata(handles.figure1, handles);
-if str2double(get(hObject,'String'))<=0
-    disp('du har matat in en steglängd som inte går att använda, steglängden sätts nu automatiskt till 100');
+if str2double(get(hObject,'String'))<100
+    disp('du har matat in en steglängd som inte går att använda, steglängden sätts nu automatiskt till 100.');
     setappdata(handles.figure1, 'step_iv', 100);
+    set(handles.Step_IV_edit,'String','100');
     guidata(handles.figure1, handles);
 elseif ~mod(str2double(get(hObject,'String')),1)==0
-    disp('du har matat in en steglängd som inte är ett heltal, steglängden sätts nu automatiskt till 100'); 
-    setappdata(handles.figure1, 'step_iv', 100);
+    disp('du har matat in en steglängd som inte är ett heltal, steglängden sätts nu automatiskt till närmsta heltal.'); 
+    setappdata(handles.figure1, 'step_iv', round(str2double(get(hObject,'String'))));
+    set(handles.Step_IV_edit,'String', num2str(getappdata(handles.figure1, 'step_iv')));
     guidata(handles.figure1, handles);
+elseif str2double(get(hObject,'String'))>16300
+     disp('du har matat in en steglängd som inte går att använda, steglängden sätts nu automatiskt till det maximala.')
+     setappdata(handles.figure1,'step_iv',16300);
+     set(handles.Step_IV_edit,'String','16300');
+     guidata(handles.figure1, handles);
 end
 
 
@@ -313,6 +320,7 @@ guidata(handles.figure1, handles);
 if getappdata(handles.figure1,'illuminated_area')<=0
     disp('den belysta ytan kan inte vara mindre än 0, mata in korrekt area annars används arean 10');
     setappdata(handles.figure1, 'illuminated_area', 10);
+    set(handles.Illuminated_area_edit,'String','10');
     guidata(handles.figure1, handles);
 end
 
@@ -358,7 +366,8 @@ handles = guidata(handles.figure1);
 setappdata(handles.figure1, 'R', str2double(get(hObject,'String')));
 guidata(handles.figure1, handles);
 if getappdata(handles.figure1,'R')<=0
-    disp('Resistansen måste vara större än 0, mata in korrekt värde annars används R=1');
+    disp('Resistansen måste vara större än 0, mata in korrekt värde annars används R=10 ohm');
+    set(handles.R_edit,'String','10');
     setappdata(handles.figure1, 'R', 1);
     guidata(handles.figure1, handles);
 end

@@ -2,7 +2,9 @@ function [M, QM] = createSquareWave(length, rate)
 %CREATESQUAREWAVE Summary of this function goes here
 %   Detailed explanation goes here
 t = (0:(1/rate):(length - 1)/rate)';
-QM = [450 500 550 600 650 700 750 820 900 950 1000 1200 1400 1600 1800 2500];
+wl = 2/rate;
+% QM = 1./(wl*[40 39 38 37 36 35 34 33 32 31 30 29 28 27 26 25]);
+QM = [300 320 330 340 350 360 370 380 390 400 410 420 430 440 460 470];
 m1 = (1 + square(2*pi*QM(1)*t))./2;
 m2 = (1 + square(2*pi*QM(2)*t))./2;
 m3 = (1 + square(2*pi*QM(3)*t))./2;

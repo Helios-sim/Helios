@@ -6,7 +6,7 @@ guidata(handles.figure1, handles);
 
 session = daq.createSession('ni');
 spec_session = daq.createSession('ni');
-session.Rate = 20000;
+session.Rate = 25000;
 
 %Digital output
 session.addDigitalChannel('cDAQ1Mod2','port0/line0','OutputOnly');
@@ -68,19 +68,19 @@ session.addlistener('ErrorOccurred', errorhandle);
 %appdata
 setappdata(handles.figure1, 'session', session);
 setappdata(handles.figure1, 'spec_session', spec_session);
-setappdata(handles.figure1, 'from_iv', 0);
+setappdata(handles.figure1, 'from_iv', -2);
 setappdata(handles.figure1, 'to_iv', 5);
-setappdata(handles.figure1, 'step_iv', 16384);
+setappdata(handles.figure1, 'step_iv', 16300);
 setappdata(handles.figure1, 'Jsc', 1);
 setappdata(handles.figure1, 'Voc', 1);
 setappdata(handles.figure1, 'FF', 1);
-setappdata(handles.figure1, 'eff', 1);
-setappdata(handles.figure1, 'chosen_spectrum', [1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1]);
-setappdata(handles.figure1, 'illuminated_area', 1);
-setappdata(handles.figure1, 'R', 1);
+setappdata(handles.figure1, 'eff', 0);
+setappdata(handles.figure1, 'chosen_spectrum', 0.01*[1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1]);
+setappdata(handles.figure1, 'illuminated_area', 25);
+setappdata(handles.figure1, 'R', 10);
 setappdata(handles.figure1, 'Pin', 1);
 setappdata(handles.figure1, 'measurement_type', 'specificSpectrum');
-setappdata(handles.figure1, 'quantum_spectrum', [1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1]);
+setappdata(handles.figure1, 'quantum_spectrum', [0.1 0.2 0.3 0.4 0.5 0.4 0.3 0.2 0.1 0.2 0.3 0.4 0.5 0.4 0.3 0.2]);
 
 guidata(hObject, handles);
 end
