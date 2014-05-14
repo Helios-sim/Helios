@@ -10,7 +10,7 @@ switchCase = getappdata(handles.figure1, 'measurement_type');
 switch(switchCase)
     case('specificSpectrum')
             voltage = data(:,1);
-            current = data(:,2);
+            current = data(:,2)./getappdata(handles.figure1 , 'R');
             Jsc = calculate_Jsc(voltage, current);
             Voc = calculate_Voc(voltage,current);
             FF = calculate_fill_factor(voltage,current,Jsc, Voc);
@@ -23,6 +23,8 @@ switch(switchCase)
             
             axes(handles.axes1);
             plot(voltage,current);
+            
+            save('SparadeSpektrum/savedMeasurement', 'voltage','current','-ascii','-tabs');
        % plot(timestamps,data(:,3));
     case('QuantumEfficiency')
         %testing

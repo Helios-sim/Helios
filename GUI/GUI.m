@@ -161,8 +161,7 @@ function Chosen_spektrum_Callback(hObject, eventdata, handles)
 handles = guidata(handles.figure1);
 
 contents = cellstr(get(hObject,'String'));
-filename = strcat(contents{get(Hobject,'Value')},'.m');
-spectrum = load(filename, contents{get(Hobject,'Value')});
+spectrum = load('SparadeSpektrum/savedSpectrums', contents{get(hObject,'Value')}, '-ascii');
 
 %använd filnamn i drop-down-listan?
 setappdata(handles.figure1,'chosen_spectrum', spectrum);
@@ -187,6 +186,8 @@ function Create_spectrum_Callback(hObject, eventdata, handles)
 % hObject    handle to Create_spectrum (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+%this needs to be done quick!
 
 
 function From_IV_edit_Callback(hObject, eventdata, handles)

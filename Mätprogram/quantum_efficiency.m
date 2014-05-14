@@ -27,7 +27,7 @@ for i = 1:16
     tmp = abs(LOCS - frequencies(i));
     [~, idx] = min(tmp + 1);
     if length(idx) > 1
-       idx = idx(1); 
+       idx = idx(1);
     end
     PKS(idx);
     filtered_PKS(1,i) = PKS(idx);
