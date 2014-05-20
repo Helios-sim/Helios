@@ -1,12 +1,17 @@
 function set_up(hObject, handles)
-% if(isEmpty(daq.getDevices))
-%     error('There is no cDAQ module connected to the computer!');
-% end
+try
+    d = daq.getDevices;
+    if isempty(d)
+        error('There is no data acquisition module connected, make sure to connect your cDAQ9174 to the computer via USB');
+    elseif isempty(d(1).)
+        
+    end
 guidata(handles.figure1, handles);
 
 session = daq.createSession('ni');
 spec_session = daq.createSession('ni');
 session.Rate = 25000;
+
 
 %Digital output
 session.addDigitalChannel('cDAQ1Mod2','port0/line0','OutputOnly');
@@ -64,8 +69,19 @@ ai1.TerminalConfig = 'SingleEnded';
 
 errorhandle = @DaqError;
 session.addlistener('ErrorOccurred', errorhandle);
+
+session.queueOutputData([0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]);
+spec_session.outputSingleScan([0]);
+session.prepare;
+session.startForeground;
 %setting up the rest of the user data and storing everything in the gui
-%appdata
+%appdata and checking if the chosen spectrum is allowed to begin with
+AM1_5 = ImportSpectrum('AM15');
+Quantum_spectrum = ImportSpectrum('AM15');
+if (failtest(AM1_5) || failtest(Quantum_spectrum))
+    error('The chosen spectrum exceeds the allowed voltage level');
+end
+
 setappdata(handles.figure1, 'session', session);
 setappdata(handles.figure1, 'spec_session', spec_session);
 setappdata(handles.figure1, 'from_iv', -2);
@@ -75,12 +91,12 @@ setappdata(handles.figure1, 'Jsc', 1);
 setappdata(handles.figure1, 'Voc', 1);
 setappdata(handles.figure1, 'FF', 1);
 setappdata(handles.figure1, 'eff', 0);
-setappdata(handles.figure1, 'chosen_spectrum', 0.01*[1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1]);
+setappdata(handles.figure1, 'chosen_spectrum', AM1_5);
 setappdata(handles.figure1, 'illuminated_area', 25);
 setappdata(handles.figure1, 'R', 10);
 setappdata(handles.figure1, 'Pin', 1);
 setappdata(handles.figure1, 'measurement_type', 'specificSpectrum');
-setappdata(handles.figure1, 'quantum_spectrum', [0.1 0.2 0.3 0.4 0.5 0.4 0.3 0.2 0.1 0.2 0.3 0.4 0.5 0.4 0.3 0.2]);
+setappdata(handles.figure1, 'quantum_spectrum', Quantum_spectrum);
 
 guidata(hObject, handles);
 end

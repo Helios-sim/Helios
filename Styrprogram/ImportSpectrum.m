@@ -59,7 +59,7 @@ styrstrom = P./k;
 forstarkningsfaktor = [1.74 1.76 1.81 1.75 1.77 1.74 1.75 1.79 1.76 1.76 1.74 1.75 1.74 1.75 1.74 1.75]';
 
 daq_spanning = styrstrom./forstarkningsfaktor;
-
+daq_spanning = daq_spanning';
 
 
 
