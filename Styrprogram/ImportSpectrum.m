@@ -4,7 +4,7 @@ function [ daq_spanning ] = ImportSpectrum( textfil)
 % simulera spektrumet. Funktionen gör en första approximation, och finjustering kommer behövas.
 %   
 %   Första kolonnen i matrisen kallad "egenskaper" innehåller våglängderna (nm) hos
-%   de 16st dioderna. 
+%   de 16st dioderna, ordnad i stigande kanalordning. 
 %   
 %   Den 2a innehåller drivströmmen (mA) för
 %   motsvarande ljuseffekt (mW) i kolonn 3, enligt datablad. Den 2a och 3e
@@ -17,9 +17,10 @@ function [ daq_spanning ] = ImportSpectrum( textfil)
 %   linjariseringen.   
 %  
 % 
-egenskaper = [420 450 490 515 520 590 630 660 680 720 750 780 830 880 945 980;
-              350 350 250 350 350 350 350 350 600 600 800 800 800 800 1000 500;
-              400 480 200 250 250 200 330 290 170 190 320 500 340 270 630 80]';
+
+egenskaper = [590 720 980 830 880 945 680 520 420 450 780 630 660 750 490 515;
+    350 600 500 800 800 1000 600 350 350 350 800 350 350 800 250 350;
+    200 190 80 340 270 630 170 250 400 480 500 330 290 320 200 250]';
 
 raw_spectrum = load(textfil, '-ascii');
 
