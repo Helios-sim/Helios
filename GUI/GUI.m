@@ -23,8 +23,6 @@ function varargout = GUI(varargin)
 
 % Edit the above text to modify the response to help GUI
 
-% Last Modified by GUIDE v2.5 30-Apr-2014 15:50:14
-
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -122,18 +120,19 @@ function Start_measurement_Callback(hObject, eventdata, handles)
 % hObject    handle to Start_measurement (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+try
 handles = guidata(handles.figure1);
 
 switchCase = getappdata(handles.figure1,'measurement_type'); 
 switch(switchCase)
     case('specificSpectrum')
-        disp('Woah, a specific spectrum!')
         Output_spectrum(handles)
     case('QuantumEfficiency')
-        disp('Woah, a quantum efficiency!')
         Output_quantum_vibrations(handles);
     otherwise
         return;
+end
+catch err
 end
 guidata(handles.figure1, handles);
 

@@ -75,12 +75,12 @@ setappdata(handles.figure1, 'Jsc', 1);
 setappdata(handles.figure1, 'Voc', 1);
 setappdata(handles.figure1, 'FF', 1);
 setappdata(handles.figure1, 'eff', 0);
-setappdata(handles.figure1, 'chosen_spectrum', 0.01*[1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1]);
+setappdata(handles.figure1, 'chosen_spectrum', 0.01*[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]);
 setappdata(handles.figure1, 'illuminated_area', 25);
 setappdata(handles.figure1, 'R', 10);
 setappdata(handles.figure1, 'Pin', 1);
 setappdata(handles.figure1, 'measurement_type', 'specificSpectrum');
-setappdata(handles.figure1, 'quantum_spectrum', [0.1 0.2 0.3 0.4 0.5 0.4 0.3 0.2 0.1 0.2 0.3 0.4 0.5 0.4 0.3 0.2]);
+setappdata(handles.figure1, 'quantum_spectrum', [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]);
 
 guidata(hObject, handles);
 end
