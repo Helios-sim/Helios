@@ -336,13 +336,6 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
-% --- Executes on button press in calibration_QE.
-function calibration_QE_Callback(hObject, eventdata, handles)
-% hObject    handle to calibration_QE (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-% Hint: get(hObject,'Value') returns toggle state of calibration_QE
-
 function Measure_time_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to Measure_time (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
