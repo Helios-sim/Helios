@@ -1,9 +1,11 @@
 function set_up(hObject, handles)
 try
     d = daq.getDevices;
+    %Check if the correct devices are installed in the correct slot
     if isempty(d)
         error('daqError:missingDevice', 'There is no data acquisition module connected, make sure to connect your cDAQ9174 to the computer via USB');
-        
+    elseif(~(strcmp(d(1).ID, 'cDAQ1Mod1') && strcmp(d(2).ID, 'cDAQ1Mod2') && strcmp(d(3).ID, 'cDAQ1Mod3') && strcmp(d(4).ID, 'Dev2')))
+            error('daqError:missingDevice','You do not have the correct devices installed in the correct slot in the cDAQ device.');            
     end
     guidata(handles.figure1, handles);
     
@@ -77,11 +79,7 @@ try
     session.startForeground;
     %setting up the rest of the user data and storing everything in the gui
     %appdata and checking if the chosen spectrum is allowed to begin with
-    AM1_5 = ImportSpectrum('AM15');
-    Quantum_spectrum = ImportSpectrum('AM15');
-    if (failtest(AM1_5) || failtest(Quantum_spectrum))
-        error('setup:spectrumFault','The chosen spectrum contains illegal voltage levels.');
-    end
+    
     
     setappdata(handles.figure1, 'session', session);
     setappdata(handles.figure1, 'spec_session', spec_session);
@@ -92,26 +90,38 @@ try
     setappdata(handles.figure1, 'Voc', 1);
     setappdata(handles.figure1, 'FF', 1);
     setappdata(handles.figure1, 'eff', 0);
-    setappdata(handles.figure1, 'chosen_spectrum', AM1_5);
     setappdata(handles.figure1, 'illuminated_area', 25);
     setappdata(handles.figure1, 'R', 10);
     setappdata(handles.figure1, 'Pin', 1);
     setappdata(handles.figure1, 'measurement_type', 'specificSpectrum');
+    
+    AM1_5 = ImportSpectrum('AM15');
+    Quantum_spectrum = ImportSpectrum('AM15');
+    if (failtest(AM1_5) || failtest(Quantum_spectrum))
+        error('setup:spectrumFault','The chosen spectrum contains illegal voltage levels.');
+    end
+    setappdata(handles.figure1, 'chosen_spectrum', AM1_5);
     setappdata(handles.figure1, 'quantum_spectrum', Quantum_spectrum);
     
     guidata(hObject, handles);
+    
 catch err
-    switch
-        switchcase = err.identifier;
-        case strcmp(switchcase, 'setup:spectrumFault')
+    switchcase = err.identifier;
+    switch switchcase
+        case 'setup:spectrumFault'
             setappdata(handles.figure1, 'chosen_spectrum', zeros(1,16));
             setappdata(handles.figure1, 'quantum_spectrum', zeros(1,16));
-        case strcomp(switchcase,'daqError:missingDevice')
+            guidata(hObject, handles);
+        case 'daqError:missingDevice'
             rethrow(err);
-        case
+        case 'daqError:unexpectedRuntimeError'
+            session.outputSingleScan(zeros(1,31));
+            spec_session.outputSingleScan([0]);
+            rethrow(err);
         otherwise
+            disp(err.message);
+            rethrow(err);
     end
-    
 end
 end
 
