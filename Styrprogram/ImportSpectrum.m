@@ -6,21 +6,21 @@ function [ daq_spanning ] = ImportSpectrum( textfil)
 %   Första kolonnen i matrisen kallad "egenskaper" innehåller våglängderna (nm) hos
 %   de 16st dioderna, ordnad i stigande kanalordning. 
 %   
-%   Den 2a innehåller drivströmmen (mA) för
+%   Den 2a kolonnen innehåller drivströmmen (mA) för
 %   motsvarande ljuseffekt (mW) i kolonn 3, enligt datablad. Den 2a och 3e
 %   kolonnen används för att linjarisera förhållandet mellan ström och 
 %   ljuseffekt. 
 % 
-%   Med en fotometer kan ett mer korrekt förhållande mellan
-%   drivström och ljuseffekt för dioderna användas. Ändra då på vektorn
+%   Med hjälp av en fotometer kan ett mer korrekt förhållande mellan
+%   drivström och ljuseffekt för dioderna utnyttjas. Ändra då på vektorn
 %   "k". Vektorn k innehåller riktningskoefficienterna för
 %   linjariseringen.   
 %  
 % 
-
-egenskaper = [590 720 980 830 880 945 680 520 420 450 780 630 660 750 490 515;
-    350 600 500 800 800 1000 600 350 350 350 800 350 350 800 250 350;
-    200 190 80 340 270 630 170 250 400 480 500 330 290 320 200 250]';
+mineffekt = [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]';
+minstrom = [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]';
+maxeffekt = [200 190 80 340 270 630 170 250 400 480 500 330 290 320 200 250]';
+maxstrom = [350 600 500 800 800 1000 600 350 350 350 800 350 350 800 250 350]';
 
 raw_spectrum = load(textfil, '-ascii');
 
@@ -29,10 +29,13 @@ raw_spectrum = load(textfil, '-ascii');
 vq = interp1(raw_spectrum(:,1),raw_spectrum(:,2),(380:1020))';
 vq = [zeros(379,1)' vq']';
 
-
 % Bestämmer vilka våglängdsintervall över vilka spektrumets effekt ska integreras
- spektrumsampel=[400 430 439 470 500 517 570 610 640 660 700 730 760 810 860 960;
-                 439 470 510 517 540 610 750 675 680 700 740 800 850 900 965 1000]';
+spektrumsampel=[570 700 960 810 810 860 660 517 400 430 760 610 640 730 470 500;
+               610 740 1000 900 900 965 700 610 439 470 850 675 680 800 517 540]';
+
+% % Bestämmer vilka våglängdsintervall över vilka spektrumets effekt ska integreras
+%  spektrumsampel=[400 430 439 470 500 517 570 610 640 660 700 730 760 810 860 960;
+%                  439 470 510 517 540 610 750 675 680 700 740 800 850 900 965 1000]';
            
              
              
@@ -44,15 +47,24 @@ for n=1:16;
         integrerad_effekt = integrerad_effekt + vq(i);
     end
     P(n) = integrerad_effekt/56*0.0896;
+    if(P(n)<mineffekt(n))
+        P(n) = 0;
+    end
 end
 
 
 % Räknar om ljuseffekt till styrström
 for i = 1:16
-    k(i) = egenskaper(i,3)/egenskaper(i,2);
+    k(i) = (maxeffekt(i)-mineffekt(i))/(maxstrom(i)- minstrom(i));
 end
 k = k';
 styrstrom = P./k;
+
+% for i = 1:16
+%     if(styrstrom(i)<MINSTA_MÖJLIGA)
+%         styrstrom(i) = 0;
+%     end
+% end
 
 % Räknar om sytrströmmen till en spänning från daq-kortet
 %kanalvis 1.76 1.79 1.76 1.75 1.74 1.74 1.75 1.77 1.74 1.75 1.75 1.81 1.74
