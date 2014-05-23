@@ -29,9 +29,17 @@ raw_spectrum = load(textfil, '-ascii');
 vq = interp1(raw_spectrum(:,1),raw_spectrum(:,2),(380:1020))';
 vq = [zeros(379,1)' vq']';
 
+% figure(1)
+% plot(vq)
+% figure(2)
+% plot(raw_spectrum(:,1),raw_spectrum(:,2))
+% axis([0 1200 0 1.8]);
+
 % Bestämmer vilka våglängdsintervall över vilka spektrumets effekt ska integreras
-spektrumsampel=[570 700 960 810 810 860 660 517 400 430 760 610 640 730 470 500;
-               610 740 1000 900 900 965 700 610 439 470 850 675 680 800 517 540]';
+%               590 720 980 830 880 945 680 520 420 450 780 630 660 750 490 515
+%               d   d       d   d   d   d               d   d       d   d   d
+spektrumsampel=[570 690 960 790 810 860 650 500 400 430 730 610 640 700 470 500;
+               610 740 1000 870 930 975 710 540 440 470 800 650 680 780 530 540]';
 
 % % Bestämmer vilka våglängdsintervall över vilka spektrumets effekt ska integreras
 %  spektrumsampel=[400 430 439 470 500 517 570 610 640 660 700 730 760 810 860 960;
@@ -43,7 +51,7 @@ spektrumsampel=[570 700 960 810 810 860 660 517 400 430 760 610 640 730 470 500;
 P = zeros(16,1);
 for n=1:16;
     integrerad_effekt = 0;
-    for i=spektrumsampel(n,1):spektrumsampel(n,2)
+    for i=spektrumsampel(n,1):1:spektrumsampel(n,2)
         integrerad_effekt = integrerad_effekt + vq(i);
     end
     P(n) = integrerad_effekt/56*0.0896;
