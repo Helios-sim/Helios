@@ -1,4 +1,4 @@
-function [ daq_spanning ] = ImportSpectrum( textfil)
+function [ daq_spanning, P ] = ImportSpectrum( textfil)
 % Läser in en textfil med våglängder och ljuseffekt för ett spektrum, och
 % tar fram vilka spänningar som ska skickas ut från daq_kortet för att
 % simulera spektrumet. Funktionen gör en första approximation, och finjustering kommer behövas.
