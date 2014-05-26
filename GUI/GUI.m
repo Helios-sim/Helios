@@ -171,8 +171,10 @@ function Chosen_spektrum_Callback(hObject, eventdata, handles)
 handles = guidata(handles.figure1);
 try
     contents = cellstr(get(hObject,'String'));
-    spectrum = load('SparadeSpektrum/savedSpectrums', contents{get(hObject,'Value')}, '-ascii');
-    
+    spectrum = ImportSpectrum(contents{get(hObject,'Value')});
+    % för framtida bruk, ovanstående funktion hämtar alltid AM1.5 tills
+    % ImportSpectrum är automatiserad.
+        
     %använd filnamn i drop-down-listan?
     setappdata(handles.figure1,'chosen_spectrum', spectrum);
 catch err
@@ -348,17 +350,6 @@ guidata(handles.figure1, handles);
 % --- Executes during object creation, after setting all properties.
 function Illuminated_area_edit_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to Illuminated_area_edit (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-function Measure_time_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to Measure_time (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 

@@ -1,90 +1,41 @@
 function [ daq_spanning, P ] = ImportSpectrum( textfil)
-% Läser in en textfil med våglängder och ljuseffekt för ett spektrum, och
-% tar fram vilka spänningar som ska skickas ut från daq_kortet för att
-% simulera spektrumet. Funktionen gör en första approximation, och finjustering kommer behövas.
-%   
-%   Första kolonnen i matrisen kallad "egenskaper" innehåller våglängderna (nm) hos
-%   de 16st dioderna, ordnad i stigande kanalordning. 
-%   
-%   Den 2a kolonnen innehåller drivströmmen (mA) för
-%   motsvarande ljuseffekt (mW) i kolonn 3, enligt datablad. Den 2a och 3e
-%   kolonnen används för att linjarisera förhållandet mellan ström och 
-%   ljuseffekt. 
-% 
-%   Med hjälp av en fotometer kan ett mer korrekt förhållande mellan
-%   drivström och ljuseffekt för dioderna utnyttjas. Ändra då på vektorn
-%   "k". Vektorn k innehåller riktningskoefficienterna för
-%   linjariseringen.   
-%  
-% 
+% Bra effekt, dåligt spektrum. AM1.5 hårdkodat tills vidare
+P = [43.2255 41.0777 16.5000 53.3333 52.5000 28.5000 35.6522 50.4000 49.0000 59.0000 39.0000 70.8000 48.3333 36.8000 42.7273 50.4000];
+
+%kompenserar för att inte alla dioder samarbetar för att uppnå önskad
+%intensitet vid en given punkt, istället räknas med de som faktiskt gör det
+samdioder = 21.8750;
+
+
+%Används för att linjarisera förhållandet mellan ljuseffekt och drivström.
+%med minström menas den minsta drivström som behövs för att dioden ska
+%emittera ljus, och mineffekt är motsvarande effekt. Dioderna tål inte mer
+%än maxström.
 mineffekt = [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]';
 minstrom = [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]';
 maxeffekt = [200 190 80 340 270 630 170 250 400 480 500 330 290 320 200 250]';
 maxstrom = [350 600 500 800 800 1000 600 350 350 350 800 350 350 800 250 350]';
 
-raw_spectrum = load(textfil, '-ascii');
-
-
-%   Interpolera datan i textfilen och få den på önskad form
-vq = interp1(raw_spectrum(:,1),raw_spectrum(:,2),(380:1020))';
-vq = [zeros(379,1)' vq']';
-
-% figure(1)
-% plot(vq)
-% figure(2)
-% plot(raw_spectrum(:,1),raw_spectrum(:,2))
-% axis([0 1200 0 1.8]);
-
-% Bestämmer vilka våglängdsintervall över vilka spektrumets effekt ska integreras
-%               590 720 980 830 880 945 680 520 420 450 780 630 660 750 490 515
-%               d   d       d   d   d   d               d   d       d   d   d
-spektrumsampel=[570 690 960 790 810 860 650 500 400 430 730 610 640 700 470 500;
-               610 740 1000 870 930 975 710 540 440 470 800 650 680 780 530 540]';
-
-% % Bestämmer vilka våglängdsintervall över vilka spektrumets effekt ska integreras
-%  spektrumsampel=[400 430 439 470 500 517 570 610 640 660 700 730 760 810 860 960;
-%                  439 470 510 517 540 610 750 675 680 700 740 800 850 900 965 1000]';
-           
-             
-             
-% P-vektorn fylls med önskad ljuseffekt för varje diod
-P = zeros(16,1);
-for n=1:16;
-    integrerad_effekt = 0;
-    for i=spektrumsampel(n,1):1:spektrumsampel(n,2)
-        integrerad_effekt = integrerad_effekt + vq(i);
-    end
-    P(n) = integrerad_effekt/56*0.0896;
-    if(P(n)<mineffekt(n))
-        P(n) = 0;
-    end
-end
-
-
-% Räknar om ljuseffekt till styrström
+k = zeros(1,16);
 for i = 1:16
     k(i) = (maxeffekt(i)-mineffekt(i))/(maxstrom(i)- minstrom(i));
 end
-k = k';
-styrstrom = P./k;
 
-% for i = 1:16
-%     if(styrstrom(i)<MINSTA_MÖJLIGA)
-%         styrstrom(i) = 0;
-%     end
-% end
+%Vektor med effekter för olika dioder [mW/cm²/diod]
+diod_P = P/10/samdioder;
 
-% Räknar om sytrströmmen till en spänning från daq-kortet
-%kanalvis 1.76 1.79 1.76 1.75 1.74 1.74 1.75 1.77 1.74 1.75 1.75 1.81 1.74
-%1.76 1.75 1.74
-forstarkningsfaktor = [1.74 1.76 1.81 1.75 1.77 1.74 1.75 1.79 1.76 1.76 1.74 1.75 1.74 1.75 1.74 1.75]';
+% Räknar om ljuseffekt till styrström
+styrstrom = diod_P./k;
 
+% Matrisen innehåller maxvärdena från de 8 förstärkarkorten av kanalernas 
+% förstärkningsfaktorer.
+forstarkningsfaktor = [1.74 1.76 1.81 1.75 1.77 1.74 1.75 1.79 1.76 1.76 1.74 1.75 1.74 1.75 1.74 1.75];
+
+% Räknar om styrström till spänning ut från daq-kortet.
 daq_spanning = styrstrom./forstarkningsfaktor;
-daq_spanning = daq_spanning';
 
-
-
-
+% Kontrollerar att ingen spänning blir för hög
+failtest(daq_spanning)
 
 end
 

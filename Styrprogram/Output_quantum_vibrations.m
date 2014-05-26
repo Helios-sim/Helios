@@ -19,14 +19,15 @@ setappdata(handles.figure1, 'quantum_matrix', quantum_matrix);
 Data = [led_power, voltage, spectrum];
 session.queueOutputData(Data);
 session.prepare;
+%mätning utförs
 [measure_data, timestamps, triggerTime] = session.startForeground;
-guidata(handles.figure1, handles);
+%beräkningar utförs
 process_data(measure_data, timestamps, handles)
+shutdown_simulator(handles);
 catch err
     if strcmp(err.identifier, 'runtime:spectrumFault')
         disp(err.message);
-        session.outputSingleScan(zeros(1,32));
-        spec_session.outputSingleScan([0]);
+        shutdown_simulator(handles);
     else
         rethrow(err);
     end

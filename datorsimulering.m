@@ -1,26 +1,11 @@
 % Bra spektrum, dålig effekt
 % P = [60.5157 61.6166/1.5 27 80/1.5 105/2 76/5 82/1.5 63/2 49 59 78/2 59 58/3 92/2.5 94/2.1 63/2];
 
-% Bra effekt, dåligt spektrum
-P = [60.5157/1.4 61.6166/1.5 27/1.8 80/1.5 105/2 76/4 82/2.3 63/2 49 59 78/2 59 58/3 92/2.5 94/2.2 63/2];
+% Bra effekt, dåligt spektrum. AM1.5 hårdkodat tills vidare
+P = [43.2255 41.0777 16.5000 53.3333 52.5000 28.5000 35.6522 50.4000 49.0000 59.0000 39.0000 70.8000 48.3333 36.8000 42.7273 50.4000];
 
-%Rättar till intervallet 400-500
-P(9) = P(9);
-P(10) = P(10);
-
-%Rättar till intervallet 500-600
-P(8) = 1.6*P(8);
-P(16) = 1.6*P(16);
-
-%Rättar till intervallet 600-700
-
-P(12) = 1.2*P(12); 
-P(13) = 2.5*P(13);
-
-%Rättar till intervallet 900-1000
-P(3) = 1.1*P(3); 
-P(6) = 1.5*P(6); 
-
+%kompenserar för att inte alla dioder samarbetar för att uppnå önskad
+%intensitet vid en given punkt, istället räknas med de som faktiskt gör det
 samdioder = 21.8750;
 
 f1 = gauss_distribution(P(1),590);
@@ -40,11 +25,9 @@ f14 = gauss_distribution(P(14),750);
 f15 = gauss_distribution(P(15),490);
 f16 = gauss_distribution(P(16),515);
 
-
-
 dioder = zeros(1,1001);
 
-dioder(590) = 1;
+dioder(590)= 1;
 dioder(720)= 1;
 dioder(980)= 1;
 dioder(830)= 1;
@@ -77,7 +60,6 @@ maxstrom = [350 600 500 800 800 1000 600 350 350 350 800 350 350 800 250 350]';
 for i = 1:16
     k(i) = (maxeffekt(i)-mineffekt(i))/(maxstrom(i)- minstrom(i));
 end
-
 
 diod_P = P/10/samdioder;
 

@@ -113,10 +113,10 @@ catch err
             setappdata(handles.figure1, 'quantum_spectrum', zeros(1,16));
             guidata(hObject, handles);
         case 'daqError:missingDevice'
+            shutdown_simulator(handles);
             rethrow(err);
         case 'daqError:unexpectedRuntimeError'
-            session.outputSingleScan(zeros(1,31));
-            spec_session.outputSingleScan([0]);
+            shutdown_simulator(handles);
             rethrow(err);
         otherwise
             disp(err.message);

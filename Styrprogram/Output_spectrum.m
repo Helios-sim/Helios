@@ -18,12 +18,19 @@ led_power = ones(length(voltage),16);
 Data = [led_power, voltage, spectrum];
 session.queueOutputData(Data);
 session.prepare;
+
+% mätningen utförs
 [measure_data, timestamps, triggerTime] = session.startForeground;
+
+% beräkningar utförs
 process_data(measure_data, timestamps, handles);
+
+% stäng av
 session.queueOutputData(zeros(1,32));
 spec_session.outputSingleScan([0]);
 session.prepare;
 session.startForeground;
+
 catch err
     if strcmp(err.identifier, 'runtime:spectrumFault')
         session.outputSingleScan(1,32);
