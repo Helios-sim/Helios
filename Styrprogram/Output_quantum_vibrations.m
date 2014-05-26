@@ -4,9 +4,8 @@ session = getappdata(handles.figure1,'session');
 spec_session = getappdata(handles.figure1, 'spec_session');
 appdata = getappdata(handles.figure1);
 datastep = session.Rate;
-supply_voltage = 1;
 
-voltage = supply_voltage*ones(datastep,1);
+voltage = zeros(datastep,1);
 quantum_spectrum = appdata.quantum_spectrum;
 if failtest(quantum_spectrum)
     error('runtime:spectrumFault','The spectrum specified for the quantum frequency measurement is faulty.');

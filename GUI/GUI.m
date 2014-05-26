@@ -131,7 +131,10 @@ function Start_measurement_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 try
     handles = guidata(handles.figure1);
-    
+    session = getappdata(handles.figure1,'session');
+    if ~session.IsDone
+        error('daqRuntime:sessionNotDone','The session is running a measurement, be patient.')
+    end
     switchCase = getappdata(handles.figure1,'measurement_type');
     switch(switchCase)
         case('specificSpectrum')
@@ -142,8 +145,12 @@ try
             return;
     end
 catch err
+    if strcmp(err.identifier,'daqRuntime:sessionNotDone')
+        disp(err.message);
+    else
     shutdown_simulator(handles);
     rethrow(err);
+    end
 end
 guidata(handles.figure1, handles);
 
@@ -231,12 +238,15 @@ if from_iv<-5
     disp('Du har valt ett otillåtet intervall, spänningen sätts automatiskt till -5 V');
     setappdata(handles.figure1,'from_iv', -5);
     set(handles.From_IV_edit,'String','-5');
-elseif from_iv>= getappdata(handles.figure1,'to_iv')
+elseif from_iv >= getappdata(handles.figure1,'to_iv')
     disp('startintervallet börjar efter slutintervallet, startintervallet sätts nu automatiskt till -5');
     setappdata(handles.figure1,'from_iv', -5);
     set(handles.From_IV_edit,'String','-5');
-else
-    
+elseif from_iv > 15
+    disp('Du har valt ett otillåtet intervall, spänningen sätts automatiskt till 0');
+    setappdata(handles.figure1,'from_iv', 0);
+    set(handles.From_IV_edit,'String','0');
+else    
 setappdata(handles.figure1, 'from_iv', from_iv);
 end
 guidata(handles.figure1, handles);
@@ -268,10 +278,14 @@ if to_iv>15
     disp('Du har valt ett otillåtet intervall,slutspänningen sätts nu automatiskt till 15');
     setappdata(handles.figure1, 'to_iv', 15);
     set(handles.To_IV_edit,'String','15');
-elseif to_iv <=getappdata(handles.figure1,'from_iv')
+elseif to_iv <= getappdata(handles.figure1,'from_iv')
     disp('Din slutspänning är mindre än din startspänningen, slutspänningen sätts nu till 15');
     setappdata(handles.figure1, 'to_iv', 15);
     set(handles.To_IV_edit,'String','15');
+elseif to_iv < -5
+    disp('Du har valt ett otillåtet intervall, spänningen sätts automatiskt till 0');
+    setappdata(handles.figure1,'from_iv', 0);
+    set(handles.From_IV_edit,'String','0');
 else
     setappdata(handles.figure1, 'to_iv', to_iv);
 end
@@ -372,6 +386,10 @@ if getappdata(handles.figure1,'R')<=0
     disp('Resistansen måste vara större än 0, mata in korrekt värde annars används R=10 ohm');
     set(handles.R_edit,'String','10');
     setappdata(handles.figure1, 'R', 1);
+elseif R < 1000000000
+    disp('Resistansen måste vara mindre än eller lika med 1 GOhm, resistansen sätts nu till 1 GOhm')
+    set(handles.R_edit,'String','1000000000');
+    setappdata(handles.figure1, 'R', 1000000000);
 else
     setappdata(handles.figure1, 'R', str2double(get(hObject,'String')));
 end

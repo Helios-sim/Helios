@@ -15,10 +15,11 @@ for i=1:16
     end
 end
 if (failvector > 0)
-    FAIL = true
-else FAIL = false
+    Fail = true;
+else
+    Fail = false;
 end
-    
+
 
 %Undersöker att ingen önskad spänning överstiger den maximalt tillåtna
 % if(isempty(nonzeros(daq_spanning>max_V)))
