@@ -42,7 +42,21 @@ try
         end
     end
     
-    QE = round((100*pi)*(filtered_PKS./getappdata(handles.figure1, 'quantum_spectrum')));
+    % intensitet för kanal:         1  2   3   4   5   6 7   8   9   10  11  12  13  14  15 16
+    currentIntensity = (1/(0.83*5))*[2.5 2.9 1.3 3.8 4.5 3 1.9 4.3 4.7 4.5 3.8 2.6 4.6 2.8 3 4.6];
+    
+    %konvertera ström till total effekt
+    P = (getappdata(handles.figure1, 'quantum_spectrum')*(1.8).*currentIntensity*getappdata(handles.figure1,'illuminated_area'));
+    wavelengths = [590 720 980 830 880 945 680 520 420 450 780 630 660 750 490 515]*1e-9;
+    h = 6.6261e-34;
+    c = 3e8;
+    photons = P./(h*c./wavelengths);
+    
+    %konvertera ström till antal elektroner
+    electrons = filtered_PKS/(1.602e-19);
+    
+    QE = round((100*pi)*(electrons./photons));
+    
     for i = 1:length(QE)
         if(QE(i) == inf)
             QE(i) = 0;
@@ -52,14 +66,10 @@ try
     axes(handles.axes1);
     plot(frequencies, QE);
     axis([290 460 0 110]);
-    
-    figure(2)
-    plot(Y)
-    if length(filtered_PKS > 0)
-        axis([280 470 0 max(filtered_PKS)]);
-    else
-        axis([280 470 0 1]);
-    end
+
+%     figure(2)
+%     plot(Y)
+
     set(handles.Efficiency_sign,'String', num2str(round(mean(QE))));
     set(handles.Jsc_sign,'String', 'N/A');
     set(handles.Voc_sign,'String', 'N/A');

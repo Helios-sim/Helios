@@ -187,6 +187,8 @@ try
 catch err
     if strcmp(err.identifier,'MATLAB:load:couldNotReadFile');
         setappdata(handles.figure1,'chosen_spectrum', zeros(1,16));
+    elseif strcmp(err.identifier,'runtimeError:spectrumFault')
+        disp(err.message);
     else
         shutdown_simulator(handles);
         rethrow(err);
@@ -232,20 +234,28 @@ function From_IV_edit_Callback(hObject, eventdata, handles)
 %        str2double(get(hObject,'String')) returns contents of From_IV_edit as a double
 handles = guidata(handles.figure1);
 
-from_iv=getappdata(handles.figure1, 'from_iv');
+from_iv = str2double(get(hObject,'String'));
 %checks if the given intervall is ok
-if from_iv<-5
+if isnan(from_iv)
+    disp('du har matat in ett ogiltigt värde, vänligen försök igen');
+    setappdata(handles.figure1,'from_iv', -1);
+    set(handles.From_IV_edit,'String','-1');
+    
+elseif from_iv<-5
     disp('Du har valt ett otillåtet intervall, spänningen sätts automatiskt till -5 V');
     setappdata(handles.figure1,'from_iv', -5);
     set(handles.From_IV_edit,'String','-5');
+    
 elseif from_iv >= getappdata(handles.figure1,'to_iv')
     disp('startintervallet börjar efter slutintervallet, startintervallet sätts nu automatiskt till -5');
     setappdata(handles.figure1,'from_iv', -5);
     set(handles.From_IV_edit,'String','-5');
+    
 elseif from_iv > 15
     disp('Du har valt ett otillåtet intervall, spänningen sätts automatiskt till 0');
     setappdata(handles.figure1,'from_iv', 0);
     set(handles.From_IV_edit,'String','0');
+    
 else    
 setappdata(handles.figure1, 'from_iv', from_iv);
 end
@@ -273,15 +283,23 @@ function To_IV_edit_Callback(hObject, eventdata, handles)
 % Hints: get(hObject,'String') returns contents of To_IV_edit as text
 %        str2double(get(hObject,'String')) returns contents of To_IV_edit as a double
 handles = guidata(handles.figure1);
-to_iv = getappdata(handles.figure1,'to_iv');
-if to_iv>15
+to_iv = str2double(get(hObject,'String'));
+
+if isnan(to_iv)
+    disp('du har matat in ett ogiltigt värde, vänligen försök igen');
+    setappdata(handles.figure1, 'to_iv', 2);
+    set(handles.To_IV_edit,'String','2');
+    
+elseif to_iv > 15
     disp('Du har valt ett otillåtet intervall,slutspänningen sätts nu automatiskt till 15');
     setappdata(handles.figure1, 'to_iv', 15);
     set(handles.To_IV_edit,'String','15');
+    
 elseif to_iv <= getappdata(handles.figure1,'from_iv')
     disp('Din slutspänning är mindre än din startspänningen, slutspänningen sätts nu till 15');
     setappdata(handles.figure1, 'to_iv', 15);
     set(handles.To_IV_edit,'String','15');
+
 elseif to_iv < -5
     disp('Du har valt ett otillåtet intervall, spänningen sätts automatiskt till 0');
     setappdata(handles.figure1,'from_iv', 0);
@@ -312,15 +330,23 @@ function Step_IV_edit_Callback(hObject, eventdata, handles)
 % Hints: get(hObject,'String') returns contents of Step_IV_edit as text
 %        str2double(get(hObject,'String')) returns contents of Step_IV_edit as a double
 handles = guidata(handles.figure1);
-if str2double(get(hObject,'String'))<100
+step_IV = str2double(get(hObject,'String'));
+if isnan(step_IV)
+    disp('du har matat in ett ogiltigt värde, vänligen försök igen');
+    setappdata(handles.figure1, 'step_iv', 100);
+    set(handles.Step_IV_edit,'String','100');
+    
+elseif step_IV <100
     disp('du har matat in en steglängd som inte går att använda, steglängden sätts nu automatiskt till 100.');
     setappdata(handles.figure1, 'step_iv', 100);
     set(handles.Step_IV_edit,'String','100');
-elseif ~mod(str2double(get(hObject,'String')),1)==0
+    
+elseif ~mod(step_IV,1)==0
     disp('du har matat in en steglängd som inte är ett heltal, steglängden sätts nu automatiskt till närmsta heltal.');
     setappdata(handles.figure1, 'step_iv', round(str2double(get(hObject,'String'))));
     set(handles.Step_IV_edit,'String', num2str(getappdata(handles.figure1, 'step_iv')));
-elseif str2double(get(hObject,'String'))>16300
+    
+elseif step_IV>16300
     disp('du har matat in en steglängd som inte går att använda, steglängden sätts nu automatiskt till det maximala.')
     setappdata(handles.figure1,'step_iv',16300);
     set(handles.Step_IV_edit,'String','16300');
@@ -382,11 +408,16 @@ function R_edit_Callback(hObject, eventdata, handles)
 % Hints: get(hObject,'String') returns contents of R_edit as text
 %        str2double(get(hObject,'String')) returns contents of R_edit as a double
 handles = guidata(handles.figure1);
-if getappdata(handles.figure1,'R')<=0
+R = getappdata(handles.figure1,'R');
+if isnan(R)
+    disp('du har matat in ett ogiltigt värde, vänligen försök igen');
+    set(handles.R_edit,'String','10');
+    setappdata(handles.figure1, 'R', 10);
+elseif R <=0
     disp('Resistansen måste vara större än 0, mata in korrekt värde annars används R=10 ohm');
     set(handles.R_edit,'String','10');
     setappdata(handles.figure1, 'R', 1);
-elseif R < 1000000000
+elseif R > 1000000000
     disp('Resistansen måste vara mindre än eller lika med 1 GOhm, resistansen sätts nu till 1 GOhm')
     set(handles.R_edit,'String','1000000000');
     setappdata(handles.figure1, 'R', 1000000000);

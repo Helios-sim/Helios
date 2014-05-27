@@ -5,7 +5,7 @@ spec_session = getappdata(handles.figure1, 'spec_session');
 appdata = getappdata(handles.figure1);
 datastep = session.Rate;
 
-voltage = zeros(datastep,1);
+voltage = zeros(datastep,1);%*(1/11);
 quantum_spectrum = appdata.quantum_spectrum;
 if failtest(quantum_spectrum)
     error('runtime:spectrumFault','The spectrum specified for the quantum frequency measurement is faulty.');
@@ -14,6 +14,10 @@ spectrum = ones(1,datastep)'*(quantum_spectrum(1:15));
 spec_session.outputSingleScan([quantum_spectrum(16)]);
 
 [led_power, quantum_matrix] = createSquareWave(datastep, datastep);
+
+spectrum(:,14) = led_power(:,14);
+spectrum(:,8) = led_power(:,8);
+
 setappdata(handles.figure1, 'quantum_matrix', quantum_matrix);
 Data = [led_power, voltage, spectrum];
 session.queueOutputData(Data);

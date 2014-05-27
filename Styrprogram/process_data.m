@@ -2,9 +2,9 @@ function process_data(data, timestamps, handles)
 %UNTITLED2 Summary of this function goes here
 %   Detailed explanation goes here
 try
+    handles = guidata(handles.figure1);
     voltage = data(:,1);
     current = convert_to_current(data(:,2), getappdata(handles.figure1,'R'));
-    handles = guidata(handles.figure1);
     switchCase = getappdata(handles.figure1, 'measurement_type');
     
     switch(switchCase)
@@ -29,6 +29,7 @@ try
             return;
     end
     guidata(handles.figure1, handles);
+    
 catch err
     if strcmp(err.identifier, 'MATLAB:indexOutOfBounds')
         disp('No data has been aqcuired, connect the analog input DAQ-card');

@@ -6,7 +6,11 @@ spec_session = getappdata(handles.figure1, 'spec_session');
 appdata = getappdata(handles.figure1);
 length_of_step = abs(appdata.from_iv - appdata.to_iv)/appdata.step_iv;
 
-voltage = [(appdata.from_iv):length_of_step:(appdata.to_iv - length_of_step)]';
+if length_of_step < 0.0012
+    length_of_step = 0.0012;
+end
+
+voltage = (1/11)*[(appdata.from_iv):length_of_step:(appdata.to_iv - length_of_step)]';
 chosen_spectrum = appdata.chosen_spectrum;
 if failtest(chosen_spectrum)
     error('runtime:spectrumFault', 'The chosen spectrum contains illegal voltage levels');

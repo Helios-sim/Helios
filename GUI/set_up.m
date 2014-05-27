@@ -17,7 +17,8 @@ try
     errorhandle = @DaqError;
     session.addlistener('ErrorOccurred', errorhandle);
     
-    
+    warning('off','daq:Session:implicitReleaseOccurredWarning');
+    warning('off','daq:Session:onDemandOnlyChannelsAdded');
     
     %Digital output
     session.addDigitalChannel('cDAQ1Mod2','port0/line0','OutputOnly');
@@ -68,8 +69,8 @@ try
     %for testing purposes
     %ai2 = session.addAnalogInputChannel('cDAQ1Mod3','ai2','Voltage');
     
-    ai0.TerminalConfig = 'SingleEnded';
-    ai1.TerminalConfig = 'SingleEnded';
+    ai0.TerminalConfig = 'Differential';
+    ai1.TerminalConfig = 'Differential';
     %-----------------------
     %ai2.TerminalConfig = 'SingleEnded';
     
@@ -83,8 +84,8 @@ try
     
     setappdata(handles.figure1, 'session', session);
     setappdata(handles.figure1, 'spec_session', spec_session);
-    setappdata(handles.figure1, 'from_iv', -2);
-    setappdata(handles.figure1, 'to_iv', 5);
+    setappdata(handles.figure1, 'from_iv', -1);
+    setappdata(handles.figure1, 'to_iv', 1);
     setappdata(handles.figure1, 'step_iv', 16300);
     setappdata(handles.figure1, 'Jsc', 1);
     setappdata(handles.figure1, 'Voc', 1);
@@ -96,7 +97,7 @@ try
     setappdata(handles.figure1, 'measurement_type', 'specificSpectrum');
     
     AM1_5 = ImportSpectrum('AM15');
-    Quantum_spectrum = ImportSpectrum('AM15');
+    Quantum_spectrum = 0.1*ImportSpectrum('AM15');
     if (failtest(AM1_5) || failtest(Quantum_spectrum))
         error('setup:spectrumFault','The chosen spectrum contains illegal voltage levels.');
     end
@@ -118,6 +119,9 @@ catch err
         case 'daqError:unexpectedRuntimeError'
             shutdown_simulator(handles);
             rethrow(err);
+        case 'runtimeError:spectrumFault'
+            disp(err.message);
+            close all hidden
         otherwise
             disp(err.message);
             rethrow(err);

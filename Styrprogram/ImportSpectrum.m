@@ -35,7 +35,10 @@ forstarkningsfaktor = [1.74 1.76 1.81 1.75 1.77 1.74 1.75 1.79 1.76 1.76 1.74 1.
 daq_spanning = styrstrom./forstarkningsfaktor;
 
 % Kontrollerar att ingen spänning blir för hög
-failtest(daq_spanning)
+if failtest(daq_spanning)
+    shutdown_simulator;
+    error('runtimeError:spectrumFault','the imported spectrum cannot be represented.');
+end
 
 end
 
