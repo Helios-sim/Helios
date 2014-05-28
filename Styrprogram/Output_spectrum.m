@@ -18,22 +18,27 @@ end
 spectrum = ones(1,length(voltage))'*(chosen_spectrum(1:15));
 spec_session.outputSingleScan([chosen_spectrum(16)]);
 
+%förbered data
 led_power = ones(length(voltage),16);
 Data = [led_power, voltage, spectrum];
+
+%förbered DAQ-kortet för mätning
+session.outputSingleScan([zeros(1,16) Data(1,17) zeros(1,15)]);
 session.queueOutputData(Data);
 session.prepare;
 
 % mätningen utförs
 [measure_data, timestamps, triggerTime] = session.startForeground;
 
+% stäng av
+session.queueOutputData(zeros(1,32));
+session.prepare;
+session.startForeground;
+spec_session.outputSingleScan([0]);
+
 % beräkningar utförs
 process_data(measure_data, timestamps, handles);
 
-% stäng av
-session.queueOutputData(zeros(1,32));
-spec_session.outputSingleScan([0]);
-session.prepare;
-session.startForeground;
 
 catch err
     if strcmp(err.identifier, 'runtime:spectrumFault')

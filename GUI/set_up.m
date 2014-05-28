@@ -68,9 +68,10 @@ try
     
     %for testing purposes
     %ai2 = session.addAnalogInputChannel('cDAQ1Mod3','ai2','Voltage');
-    
-    ai0.TerminalConfig = 'Differential';
-    ai1.TerminalConfig = 'Differential';
+    ai0.TerminalConfig = 'SingleEnded';
+    ai1.TerminalConfig = 'SingleEnded';
+    %ai0.TerminalConfig = 'Differential';
+    %ai1.TerminalConfig = 'Differential';
     %-----------------------
     %ai2.TerminalConfig = 'SingleEnded';
     
@@ -97,7 +98,7 @@ try
     setappdata(handles.figure1, 'measurement_type', 'specificSpectrum');
     
     AM1_5 = ImportSpectrum('AM15');
-    Quantum_spectrum = 0.1*ImportSpectrum('AM15');
+    Quantum_spectrum = 0.2*ImportSpectrum('AM15');
     if (failtest(AM1_5) || failtest(Quantum_spectrum))
         error('setup:spectrumFault','The chosen spectrum contains illegal voltage levels.');
     end

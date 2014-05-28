@@ -20,8 +20,7 @@ try
             set(handles.FF_sign,'String',num2str(FF));
             
             axes(handles.axes1);
-            v=getappdata(handles.figure1,'from_iv'):(getappdata(handles.figure1,'to_iv')-getappdata(handles.figure1,'from_iv'))/(length(current)):getappdata(handles.figure1,'to_iv')-(1/(length(current)));
-            plot(v,current);
+            plot(voltage-data(:,2),smooth(current,10));
             
             save('SparadeSpektrum/savedMeasurement', 'voltage','current','-ascii','-tabs');
         case('QuantumEfficiency')
