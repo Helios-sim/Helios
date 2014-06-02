@@ -437,3 +437,17 @@ function R_edit_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+
+% --- Executes on button press in Simulator_on.
+function Simulator_on_Callback(hObject, eventdata, handles)
+% hObject    handle to Simulator_on (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+if get(hObject, 'Value') == get(hObject, 'Min')
+    Simulator_on(handles);
+    set(hObject, 'String', 'Släck solsimulator');
+else
+    shutdown_simulator(handles);
+    set(hObject, 'String', 'Tänd solsimulator');
+end
