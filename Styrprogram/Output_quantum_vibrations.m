@@ -1,39 +1,40 @@
 function Output_quantum_vibrations(handles)
 try
-session = getappdata(handles.figure1,'session');
-spec_session = getappdata(handles.figure1, 'spec_session');
 appdata = getappdata(handles.figure1);
-datastep = session.Rate;
+session = appdata.session;
+datalength = session.Rate;
 
-voltage = zeros(datastep,1);%*(1/11);
+voltage = zeros(datalength,1);%*(1/11);
 quantum_spectrum = appdata.quantum_spectrum;
 
-spectrum = ones(1,datastep)'*(quantum_spectrum(1:15));
-spec_session.outputSingleScan([quantum_spectrum(16)]);
 
-[led_power, quantum_matrix] = createSquareWave(datastep, datastep);
+[led_vibration, frequency_matrix] = createMatrixWave(handles);
+setappdata(handles.figure1, 'quantum_matrix', frequency_matrix);
 
-spectrum(:,8) = quantum_spectrum(8)*led_power(:,8);
-spectrum(:,14) = quantum_spectrum(14)*led_power(:,14);
-
-setappdata(handles.figure1, 'quantum_matrix', quantum_matrix);
+for i = 1:length(quantum_spectrum)
+spectrum = quantum_spectrum(i)*led_vibration(:,i);
+end
 
 if failtest(quantum_spectrum)
     error('runtime:spectrumFault','The spectrum specified for the quantum frequency measurement is faulty.');
 end
-Data = [led_power, voltage, spectrum];
+
+Data = [spectrum, voltage];
 session.queueOutputData(Data);
 session.prepare;
-%mätning utförs
+
+% mätning utförs
 [measure_data, timestamps, triggerTime] = session.startForeground;
 shutdown_simulator(handles);
-%beräkningar utförs
+% beräkningar utförs och resultat presenteras för användaren
 process_data(measure_data, timestamps, handles)
+
 catch err
     if strcmp(err.identifier, 'runtime:spectrumFault')
-        disp(err.message);
+        disp(strcat(err.identifier, ': ', err.message));
         shutdown_simulator(handles);
     else
+        disp(strcat(err.identifier, ': ', err.message));
         rethrow(err);
     end
 end
