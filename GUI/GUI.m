@@ -52,7 +52,7 @@ function GUI_OpeningFcn(hObject, eventdata, handles, varargin)
 % varargin   command line arguments to GUI (see VARARGIN)
 handles = guidata(handles.figure1);
 handles.output = hObject;
-set_up(hObject, handles);
+%set_up(hObject, handles);
 % Update handles structure
 guidata(hObject, handles);
 
@@ -96,6 +96,7 @@ if button_state == get(hObject, 'Max')
         guidata(handles.figure1, handles);
     catch err
         shutdown_simulator(handles);
+        disp(strcat(err.identifier, ': ', err.message));
         rethrow(err);
     end
 end
@@ -119,6 +120,7 @@ if button_state == get(hObject, 'Max')
         guidata(handles.figure1, handles);
     catch err
         shutdown_simulator(handles);
+        disp(strcat(err.identifier, ': ', err.message));
         rethrow(err);
     end
 end
@@ -149,6 +151,7 @@ catch err
         disp(err.message);
     else
     shutdown_simulator(handles);
+    disp(strcat(err.identifier, ': ', err.message));
     rethrow(err);
     end
 end
@@ -166,7 +169,7 @@ function Help_button_Callback(hObject, eventdata, handles)
 if exist('user_manual.pdf', 'file')==2
     open('user_manual.pdf');
 else
-    disp('Användarmanualen kunde inte öppnas');
+    disp('Användarmanualen kunde inte öppnas, filen kunde inte hittas');
 end
 
 
@@ -191,6 +194,7 @@ catch err
         disp(err.message);
     else
         shutdown_simulator(handles);
+        disp(strcat(err.identifier, ': ', err.message));
         rethrow(err);
     end
 end
@@ -436,4 +440,18 @@ function R_edit_CreateFcn(hObject, eventdata, handles)
 %       See ISPC and COMPUTER.
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in Simulator_on.
+function Simulator_on_Callback(hObject, eventdata, handles)
+% hObject    handle to Simulator_on (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+if get(hObject, 'Value') == get(hObject, 'Min')
+    Simulator_on(handles);
+    set(hObject, 'String', 'Släck solsimulator');
+else
+    shutdown_simulator(handles);
+    set(hObject, 'String', 'Tänd solsimulator');
 end
