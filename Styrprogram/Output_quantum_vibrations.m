@@ -3,7 +3,7 @@ try
 session = getappdata(handles.figure1,'session');
 spec_session = getappdata(handles.figure1, 'spec_session');
 appdata = getappdata(handles.figure1);
-datastep = session.Rate;
+datastep = 2*session.Rate;
 
 voltage = zeros(datastep,1);%*(1/11);
 quantum_spectrum = appdata.quantum_spectrum;
