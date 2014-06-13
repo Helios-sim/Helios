@@ -2,7 +2,7 @@ function Simulator_on(handles)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 try
-    handles = guidata(handles.figure1);
+    guidata(handles.figure1, handles);
     session = getappdata(handles.figure1,'session');
     appdata = getappdata(handles.figure1);
     

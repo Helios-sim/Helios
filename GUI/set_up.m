@@ -4,7 +4,7 @@ try
     %Check if the correct devices are installed in the correct slot
     if isempty(d)
         error('daqError:missingDevice', 'There is no data acquisition module connected, make sure to connect your cDAQ9174 to the computer via USB');
-    elseif(~(strcmp(d(1).ID, 'cDAQ1Mod1') && strcmp(d(2).ID, 'cDAQ1Mod2') && strcmp(d(3).ID, 'cDAQ1Mod3')))
+     elseif(~(strcmp(d(1).ID, 'cDAQ1Mod1') && strcmp(d(2).ID, 'cDAQ1Mod2')  && strcmp(d(3).ID, 'cDAQ1Mod3')))
             error('daqError:missingDevice','You do not have the correct devices installed in the correct slot in the cDAQ device.');            
     end
     guidata(handles.figure1, handles);
@@ -38,6 +38,7 @@ try
     
     %styrspänning över solcell för IV-mätning
     session.addAnalogOutputChannel('cDAQ1Mod2','ao0','Voltage');
+    %session.addDigitalChannel('cDAQ1Mod2', 'port0/line0','outputOnly');
     
     % Analog input
     ai0 = session.addAnalogInputChannel('cDAQ1Mod3','ai0','Voltage');

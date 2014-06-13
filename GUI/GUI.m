@@ -52,7 +52,7 @@ function GUI_OpeningFcn(hObject, eventdata, handles, varargin)
 % varargin   command line arguments to GUI (see VARARGIN)
 handles = guidata(handles.figure1);
 handles.output = hObject;
-%set_up(hObject, handles);
+set_up(hObject, handles);
 % Update handles structure
 guidata(hObject, handles);
 
