@@ -4,6 +4,8 @@ function [M, QM] = createMatrixWave(handles)
 session = getappdata(handles.figure1, 'session');
 rate = session.Rate;
 
+start_frequency = 1000;
+
 detail_level = getappdata(handles.figure1, 'detail_level');
 QS = getappdata(handles.figure1, 'quantum_spectrum');
 nofchannels = length(QS);
@@ -14,7 +16,6 @@ end
 
 length_of_data = rate*detail_level;
 t = (0:(1/rate):(length_of_data - 1)/rate)';
-start_frequency = 1000;
 QM = start_frequency:20:(start_frequency + 20*nofchannels);
 M = zeros(length_of_data, nofchannels);
 

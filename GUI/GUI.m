@@ -381,16 +381,33 @@ function Illuminated_area_edit_Callback(hObject, eventdata, handles)
 % Hints: get(hObject,'String') returns contents of Illuminated_area_edit as text
 %        str2double(get(hObject,'String')) returns contents of Illuminated_area_edit as a double
 handles = guidata(handles.figure1);
-
-if getappdata(handles.figure1,'illuminated_area')<=0
-    disp('den belysta ytan kan inte vara mindre än 0, mata in korrekt area annars används arean 10');
-    setappdata(handles.figure1, 'illuminated_area', 10);
-    set(handles.Illuminated_area_edit,'String','10');
+try
+area = str2double(get(handles.Illuminated_area_edit, 'String'));
+if isnan(area)
+    written_string = get(handles.Illuminated_area_edit, 'String');
+    if strcmpi(written_string, 'Disco');
+        Disco(handles);
+    else
+        error('runtime:edit_error','Du har matat in ett felaktigt värde, försök igen');
+    end
+elseif area <= 0
+    error('runtime:forbidden_value','den belysta ytan kan inte vara mindre än 0, mata in korrekt area annars används arean 10');
 else
     setappdata(handles.figure1, 'illuminated_area', str2double(get(hObject,'String')));
 end
 guidata(handles.figure1, handles);
 
+catch err
+    if strcmp(err.identifier, 'runtime:edit_error') || strcmp(err.identifier, 'runtime:forbidden_value')
+        disp(err.message);
+        setappdata(handles.figure1, 'illuminated_area', 10);
+        set(handles.Illuminated_area_edit,'String','10');
+    else
+        disp(err.message);
+        rethrow(err);
+    end
+end
+    
 % --- Executes during object creation, after setting all properties.
 function Illuminated_area_edit_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to Illuminated_area_edit (see GCBO)
@@ -448,10 +465,20 @@ function Simulator_on_Callback(hObject, eventdata, handles)
 % hObject    handle to Simulator_on (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-if get(hObject, 'Value') == get(hObject, 'Min')
-    Simulator_on(handles);
-    set(hObject, 'String', 'Släck solsimulator');
-else
+handles = guidata(handles.figure1);
+
+try
+button_state = get(hObject, 'Value');
+    if button_state == get(hObject, 'Max')
+        set(hObject, 'String', 'Släck solsimulator');
+        Simulator_on(handles);
+    else
+        shutdown_simulator(handles);
+        set(hObject, 'String', 'Tänd solsimulator');
+    end
+catch err
     shutdown_simulator(handles);
-    set(hObject, 'String', 'Tänd solsimulator');
+    disp(strcat(err.identifier, ': ', err.message));
+    rethrow(err);
 end
+guidata(handles.figure1, handles);
