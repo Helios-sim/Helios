@@ -12,6 +12,7 @@ try
     session = daq.createSession('ni');
     session.Rate = 25000;
     
+    externTrigHandle = @externTrig;
     errorhandle = @DaqError;
     session.addlistener('ErrorOccurred', errorhandle);
     warning('off','daq:Session:implicitReleaseOccurredWarning');
@@ -43,6 +44,9 @@ try
     % Analog input
     ai0 = session.addAnalogInputChannel('cDAQ1Mod3','ai0','Voltage');
     ai1 = session.addAnalogInputChannel('cDAQ1Mod3','ai1','Voltage');
+%     
+%     ai2 = session.addAnalogInputChannel('cDAQ1Mod3','ai2','Voltage');
+%     session.addlistener('DataAvailable', externTrigHandle);
     
     ai0.TerminalConfig = 'SingleEnded';
     ai1.TerminalConfig = 'SingleEnded';

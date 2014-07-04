@@ -1,0 +1,9 @@
+#autosaves
+.asv
+
+#irrelephant stuff
+GUI/bildtillkappa.png
+
+#hardware stuff
+HardwareSimulation/
+test.m

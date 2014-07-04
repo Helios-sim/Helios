@@ -22,6 +22,7 @@ switch(switchCase)
         axes(handles.axes1);
         plot(voltage,current);
         
+        
         save('SparadeSpektrum/savedMeasurement', 'voltage','current','-ascii','-tabs');
         % plot(timestamps,data(:,3));
     case('QuantumEfficiency')

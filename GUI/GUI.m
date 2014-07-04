@@ -392,6 +392,8 @@ if isnan(area)
     end
 elseif area <= 0
     error('runtime:forbidden_value','den belysta ytan kan inte vara mindre än 0, mata in korrekt area annars används arean 10');
+elseif area > 960
+    error('runtime:forbidden_value','den belysta ytan kan inte vara större än diodpanelen, mata in korrekt area annars används arean 10');
 else
     setappdata(handles.figure1, 'illuminated_area', str2double(get(hObject,'String')));
 end
