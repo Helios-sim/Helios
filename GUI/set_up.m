@@ -58,6 +58,10 @@ try
     session.prepare;
     session.startForeground;
     
+    max_current = ones(1,16);
+    amp_factor = ones(1,16);
+    max_voltage = max_current./amp_factor;
+    
     %setting up the rest of the user data and storing everything in the gui
     %appdata and checking if the chosen spectrum is allowed to begin with
     setappdata(handles.figure1, 'session', session);
@@ -74,6 +78,11 @@ try
     setappdata(handles.figure1, 'measurement_type', 'specificSpectrum');
     setappdata(handles.figure1, 'detail_level', 1);
     setappdata(handles.figure1, 'debug_mode', 0);
+    setappdata(handles.figure1, 'max_current', max_current);
+    setappdata(handles.figure1, 'amp_factor', amp_factor);
+    setappdata(handles.figure1, 'max_voltage', max_voltage);
+    
+    
     
     AM1_5 = ImportSpectrum('AM15');
     Quantum_spectrum = 0.5*ImportSpectrum('AM15');
