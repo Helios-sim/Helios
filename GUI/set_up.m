@@ -1,11 +1,11 @@
 function set_up(hObject, handles)
 try
+    %% Check if the correct devices are installed in the correct slot
     d = daq.getDevices;
-    %Check if the correct devices are installed in the correct slot
     if isempty(d)
         error('daqError:missingDevice', 'There is no data acquisition module connected, make sure to connect your cDAQ9174 to the computer via USB');
-     elseif(~(strcmp(d(1).ID, 'cDAQ1Mod1') && strcmp(d(2).ID, 'cDAQ1Mod2')  && strcmp(d(3).ID, 'cDAQ1Mod3')))
-            error('daqError:missingDevice','You do not have the correct devices installed in the correct slot in the cDAQ device.');            
+    elseif(~(strcmp(d(1).ID, 'cDAQ1Mod1') && strcmp(d(2).ID, 'cDAQ1Mod2')  && strcmp(d(3).ID, 'cDAQ1Mod3')))
+        error('daqError:missingDevice','You do not have the correct devices installed in the correct slot in the cDAQ device.');
     end
     guidata(handles.figure1, handles);
     
@@ -16,9 +16,9 @@ try
     errorhandle = @DaqError;
     session.addlistener('ErrorOccurred', errorhandle);
     warning('off','daq:Session:implicitReleaseOccurredWarning');
-   
-
     
+    
+    %% Setting up DAQ-channels
     % Analog output
     session.addAnalogOutputChannel('cDAQ1Mod1','ao0','Voltage');
     session.addAnalogOutputChannel('cDAQ1Mod1','ao1','Voltage');
@@ -37,28 +37,42 @@ try
     session.addAnalogOutputChannel('cDAQ1Mod1','ao14','Voltage');
     session.addAnalogOutputChannel('cDAQ1Mod1','ao15','Voltage');
     
-    %styrspänning över solcell för IV-mätning
-    session.addAnalogOutputChannel('cDAQ1Mod2','ao0','Voltage');
-    %session.addDigitalChannel('cDAQ1Mod2', 'port0/line0','outputOnly');
+    % secondary analog output
+    %     session.addAnalogOutputChannel('cDAQ1Mod1','ao0','Voltage');
+    %     session.addAnalogOutputChannel('cDAQ1Mod1','ao1','Voltage');
+    %     session.addAnalogOutputChannel('cDAQ1Mod1','ao2','Voltage');
+    %     session.addAnalogOutputChannel('cDAQ1Mod1','ao3','Voltage');
+    %     session.addAnalogOutputChannel('cDAQ1Mod1','ao4','Voltage');
+    %     session.addAnalogOutputChannel('cDAQ1Mod1','ao5','Voltage');
+    %     session.addAnalogOutputChannel('cDAQ1Mod1','ao6','Voltage');
+    %     session.addAnalogOutputChannel('cDAQ1Mod1','ao7','Voltage');
+    %     session.addAnalogOutputChannel('cDAQ1Mod1','ao8','Voltage');
+    %     session.addAnalogOutputChannel('cDAQ1Mod1','ao9','Voltage');
+    %     session.addAnalogOutputChannel('cDAQ1Mod1','ao10','Voltage');
+    %     session.addAnalogOutputChannel('cDAQ1Mod1','ao11','Voltage');
+    %     session.addAnalogOutputChannel('cDAQ1Mod1','ao12','Voltage');
+    %     session.addAnalogOutputChannel('cDAQ1Mod1','ao13','Voltage');
+    %     session.addAnalogOutputChannel('cDAQ1Mod1','ao14','Voltage');
+    %     session.addAnalogOutputChannel('cDAQ1Mod1','ao15','Voltage');
     
     % Analog input
     ai0 = session.addAnalogInputChannel('cDAQ1Mod3','ai0','Voltage');
     ai1 = session.addAnalogInputChannel('cDAQ1Mod3','ai1','Voltage');
-%     
-%     ai2 = session.addAnalogInputChannel('cDAQ1Mod3','ai2','Voltage');
-%     session.addlistener('DataAvailable', externTrigHandle);
     
     ai0.TerminalConfig = 'SingleEnded';
     ai1.TerminalConfig = 'SingleEnded';
     %ai0.TerminalConfig = 'Differential';
     %ai1.TerminalConfig = 'Differential';
     
-    % pulling down the output on the DAQ to make sure no leds are damaged
-    session.queueOutputData(zeros(1,17));
+    %% pulling down the output on the DAQ to make sure no leds are damaged
+    session.queueOutputData(zeros(1,16));
     session.prepare;
     session.startForeground;
     
-    %setting up the rest of the user data and storing everything in the gui
+    %% Parameters for setup
+    detail_level = 1;
+    
+    %% Setting up the rest of the user data and storing everything in the gui
     %appdata and checking if the chosen spectrum is allowed to begin with
     setappdata(handles.figure1, 'session', session);
     setappdata(handles.figure1, 'from_iv', -1);
@@ -72,8 +86,9 @@ try
     setappdata(handles.figure1, 'R', 10);
     setappdata(handles.figure1, 'Pin', 1);
     setappdata(handles.figure1, 'measurement_type', 'specificSpectrum');
-    setappdata(handles.figure1, 'detail_level', 1);
-    setappdata(handles.figure1, 'debug_mode', 0);
+    setappdata(handles.figure1, 'detail_level', detail_level);
+    setappdata(handles.figure1, 'debug_mode', false);
+    setappdata(handles.figure1, 'spectrum_integration_time', 500000*detail_level);
     
     AM1_5 = ImportSpectrum('AM15');
     Quantum_spectrum = 0.5*ImportSpectrum('AM15');
@@ -85,6 +100,8 @@ try
     
     guidata(hObject, handles);
     
+    
+    %% Make sure nothing goes wrong, and if it does, make sure that no LEDs come to harm
 catch err
     switchcase = err.identifier;
     switch switchcase
@@ -110,6 +127,3 @@ catch err
     end
 end
 end
-
-
-

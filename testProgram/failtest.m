@@ -11,7 +11,7 @@ failvector = 0;
 for i=1:16
     if(daq_spanning(i)>max_V(i))
         failvector = failvector +1;
-        i
+        disp(i);
     end
 end
 if (failvector > 0)

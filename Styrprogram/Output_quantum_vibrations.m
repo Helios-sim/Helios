@@ -1,25 +1,26 @@
 function Output_quantum_vibrations(handles)
 try
 appdata = getappdata(handles.figure1);
+debug = getappdata(handles.figure1, 'debug_mode');
 session = appdata.session;
 datalength = session.Rate;
-
-voltage = zeros(datalength,1);%*(1/11);
 quantum_spectrum = appdata.quantum_spectrum;
-
-
 [led_vibration, frequency_matrix] = createMatrixWave(handles);
 setappdata(handles.figure1, 'quantum_matrix', frequency_matrix);
 
 for i = 1:length(quantum_spectrum)
 spectrum = quantum_spectrum(i)*led_vibration(:,i);
 end
-
 if failtest(quantum_spectrum)
     error('runtime:spectrumFault','The spectrum specified for the quantum frequency measurement is faulty.');
 end
 
-Data = [spectrum, voltage];
+if debug
+    disp('in OuputQuantumVibrations: ');
+    disp(quantum_spectrum);
+end
+
+Data = [spectrum];
 session.queueOutputData(Data);
 session.prepare;
 
