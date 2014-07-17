@@ -578,17 +578,17 @@ function ShowSpectrum_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 try
+    handles = guidata(handles.figure1);
     debug = getappdata(handles.figure1, 'debug_mode');
-    [wavelengths, spectrum] = getSpectrum(handles);
+    [spectrum] = getSpectrum(handles);
     axes(handles.axes1);
-    plot(wavelengths, spectrum);
-    axis tight
+    plot(spectrum);
     if debug
-        disp('wavelengths: ');
-        disp(size(wavelengths));
+        disp('In showSpectrum:');
         disp('spectrum: ');
         disp(size(spectrum));
     end
+guidata(handles.figure1, handles);
 catch err
     helpdlg(err.message);
     rethrow(err);
@@ -601,12 +601,18 @@ try
 % hObject    handle to axes1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+handles = guidata(handles.figure1);
+debug = getappdata(handles.figure1, 'debug_mode');
 clickState = getappdata(handles.figure1, 'clickState');
+if debug
+    disp('in axes1_buttonDownFcn');
+    disp(clickState);
+end
 if (clickState == 0)
     setappdata(handles.figure1, 'clickState', 1);
+    guidata(handles.figure1, handles);
     manualAdjustment(handles);
 end
-
 catch err
     shutdown_simulator(handles);
     helpdlg(strcat(err.identifier, ': ', err.message));

@@ -94,11 +94,6 @@ end
 %Failtest uses a vector on the channel-order form. We also want to return
 %the new_daq_voltage on the channel form
 new_daq_voltage = WaveToCha(tmp_voltage);
-disp('Now it''s displaying in channel order')
-disp(new_daq_voltage)
-disp('Stop')
-
-addpath('H:\TFYA75\mjukvara\TestProgram')
 
 % if failtest(new_daq_voltage)
 %     error('CalibrateSpectrum:Bad_spectrum', 'The function which calibrates the spectrum  made a misstake, which resulted in too high output voltages');

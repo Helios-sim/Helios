@@ -1,9 +1,10 @@
 function manualAdjustment (handles)
 try
+    handles = guidata(handles.figure1);
     clickState = getappdata(handles.figure1, 'clickState');
     while (clickState == 1)
         
-        measured_spectrum =
+        measured_spectrum = getSpectrum(handles);
         top_y = max(measured_spectrum);
         
         ydiodes(420) = top_y/4;
@@ -47,7 +48,7 @@ try
             
         end
     end
-    
+    guidata(handles.figure1, handles);
 catch err
     if(strcmp(err.identifier, 'MATLAB:undefinedVarOrFunction'))
         helpdlg(err.message);

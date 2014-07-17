@@ -90,7 +90,7 @@ try
     setappdata(handles.figure1, 'Pin', 1);
     setappdata(handles.figure1, 'measurement_type', 'specificSpectrum');
     setappdata(handles.figure1, 'detail_level', detail_level);
-    setappdata(handles.figure1, 'debug_mode', false);
+    setappdata(handles.figure1, 'debug_mode', true);
     setappdata(handles.figure1, 'spectrum_integration_time', 500000*detail_level);
     setappdata(handles.figure1, 'max_current', max_current);
     setappdata(handles.figure1, 'amp_factor', amp_factor);

@@ -1,5 +1,6 @@
 function manRaiseOne( handles, x_cord )
-
+try
+handles = guidata(handles.figure1);
 %manRaiseOne allows the user to manually change the intensity for one diode at a time
 
 button = 1;
@@ -14,7 +15,9 @@ max_volt = getappdata(handles.figure1, 'max_voltage');
 now_volt = ChaToWave(now_volt);
 max_volt = ChaToWave(max_volt);
 
-measured_spectrum =
+measured_spectrum = getSpectrum(handles);
+
+top_y = max(measured_spectrum);
 
 %Scale the max_volt and now_volt vectors so they are about the same
 %height as the spectrum in the plot.
@@ -65,5 +68,11 @@ end
 
 %Establish the new voltages
 setappdata(handles.figure1, 'chosen_spectrum', now_volt);
+guidata(handles.figure1, handles);
+
+catch err
+    helpdlg(err.message);
+    rethrow(err);
+end
 
 

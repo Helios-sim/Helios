@@ -2,7 +2,7 @@ function [ output_args ] = RaiseTheBar( handles )
 %raiseTheBar allows the user to manually change the intensity for all the diodes at
 %the same time
 try
-    
+    handles = guidata(handles.figure1);
     
     %Aqcuire the maximum allowed voltages and the voltages we have now
     now_volt = getappdata(handles.figure1, 'chosen_spectrum');
@@ -14,7 +14,7 @@ try
     saved_volt = now_volt;
     
     %Aqcuire the current spectrum we're using
-    measured_spectrum = 
+    measured_spectrum = getSpectrum(handles);
     
     %Know where the diodes are placed
     diodeplacements = [420 450 490 590 515 520 590 630 660 680 720 750 780 830 880 945 980];
@@ -108,7 +108,7 @@ try
     end
     
     setappdata(handles.figure1, 'chosen_spectrum', now_volt)
-    
+    guidata(handles.figure1, handles);
 catch err
     if(strcmp(err.identifier, 'MATLAB:ginput:FigureDeletionPause'))
         helpdlg(err.message);
