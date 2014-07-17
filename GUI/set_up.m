@@ -71,8 +71,11 @@ try
     
     %% Parameters for setup
     detail_level = 1;
+    max_current = ones(1,16);
+    amp_factor = ones(1,16);
+    max_voltage = max_current./amp_factor;
     
-    %% Setting up the rest of the user data and storing everything in the gui
+    %setting up the rest of the user data and storing everything in the gui
     %appdata and checking if the chosen spectrum is allowed to begin with
     setappdata(handles.figure1, 'session', session);
     setappdata(handles.figure1, 'from_iv', -1);
@@ -89,6 +92,10 @@ try
     setappdata(handles.figure1, 'detail_level', detail_level);
     setappdata(handles.figure1, 'debug_mode', false);
     setappdata(handles.figure1, 'spectrum_integration_time', 500000*detail_level);
+    setappdata(handles.figure1, 'max_current', max_current);
+    setappdata(handles.figure1, 'amp_factor', amp_factor);
+    setappdata(handles.figure1, 'max_voltage', max_voltage);
+    setappdata(handles.figure1, 'clickState', 0);
     
     AM1_5 = ImportSpectrum('AM15');
     Quantum_spectrum = 0.5*ImportSpectrum('AM15');
