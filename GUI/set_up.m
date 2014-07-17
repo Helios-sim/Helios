@@ -81,6 +81,7 @@ try
     setappdata(handles.figure1, 'max_current', max_current);
     setappdata(handles.figure1, 'amp_factor', amp_factor);
     setappdata(handles.figure1, 'max_voltage', max_voltage);
+    setappdata(handles.figure1, 'clickState', 0);
     
     
     

@@ -96,7 +96,7 @@ if button_state == get(hObject, 'Max')
         guidata(handles.figure1, handles);
     catch err
         shutdown_simulator(handles);
-        disp(strcat(err.identifier, ': ', err.message));
+        helpdlg(strcat(err.identifier, ': ', err.message));
         rethrow(err);
     end
 end
@@ -120,7 +120,7 @@ if button_state == get(hObject, 'Max')
         guidata(handles.figure1, handles);
     catch err
         shutdown_simulator(handles);
-        disp(strcat(err.identifier, ': ', err.message));
+        helpdlg(strcat(err.identifier, ': ', err.message));
         rethrow(err);
     end
 end
@@ -148,10 +148,10 @@ try
     end
 catch err
     if strcmp(err.identifier,'daqRuntime:sessionNotDone')
-        disp(err.message);
+        helpdlg(err.message);
     else
     shutdown_simulator(handles);
-    disp(strcat(err.identifier, ': ', err.message));
+    helpdlg(strcat(err.identifier, ': ', err.message));
     rethrow(err);
     end
 end
@@ -169,7 +169,7 @@ function Help_button_Callback(hObject, eventdata, handles)
 if exist('user_manual.pdf', 'file')==2
     open('user_manual.pdf');
 else
-    disp('Användarmanualen kunde inte öppnas, filen kunde inte hittas');
+    helpdlg('Användarmanualen kunde inte öppnas, filen kunde inte hittas');
 end
 
 
@@ -191,10 +191,10 @@ catch err
     if strcmp(err.identifier,'MATLAB:load:couldNotReadFile');
         setappdata(handles.figure1,'chosen_spectrum', zeros(1,16));
     elseif strcmp(err.identifier,'runtimeError:spectrumFault')
-        disp(err.message);
+        helpdlg(err.message);
     else
         shutdown_simulator(handles);
-        disp(strcat(err.identifier, ': ', err.message));
+        helpdlg(strcat(err.identifier, ': ', err.message));
         rethrow(err);
     end
 end
@@ -401,11 +401,11 @@ guidata(handles.figure1, handles);
 
 catch err
     if strcmp(err.identifier, 'runtime:edit_error') || strcmp(err.identifier, 'runtime:forbidden_value')
-        disp(err.message);
+        helpdlg(err.message);
         setappdata(handles.figure1, 'illuminated_area', 10);
         set(handles.Illuminated_area_edit,'String','10');
     else
-        disp(err.message);
+        helpdlg(err.message);
         rethrow(err);
     end
 end
@@ -480,7 +480,28 @@ button_state = get(hObject, 'Value');
     end
 catch err
     shutdown_simulator(handles);
-    disp(strcat(err.identifier, ': ', err.message));
+    helpdlg(strcat(err.identifier, ': ', err.message));
     rethrow(err);
 end
 guidata(handles.figure1, handles);
+
+
+% --- Executes on mouse press over axes background.
+function axes1_ButtonDownFcn(hObject, eventdata, handles)
+try
+% hObject    handle to axes1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+clickState = getappdata(handles.figure1, 'clickState');
+if (clickState == 0)
+    setappdata(handles.figure1, 'clickState', 1);
+    manualAdjustment(handles);
+end
+
+catch err
+    shutdown_simulator(handles);
+    helpdlg(strcat(err.identifier, ': ', err.message));
+    rethrow(err);
+end
+
+

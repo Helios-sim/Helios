@@ -11,19 +11,12 @@ failvector = 0;
 for i=1:16
     if(daq_spanning(i)>max_V(i))
         failvector = failvector +1;
-        i
+        disp(['Failtest: Channel ' num2str(i) ' is too high'])
     end
 end
+
 if (failvector > 0)
     Fail = true;
 else
     Fail = false;
 end
-
-
-%Undersöker att ingen önskad spänning överstiger den maximalt tillåtna
-% if(isempty(nonzeros(daq_spanning>max_V)))
-%     Fail = false;
-% else
-%     Fail = true;
-% end
