@@ -627,8 +627,45 @@ try
         manualAdjustment(handles);
     end
 catch err
+   
+end
+
+
+
+%% --- Executes on button press in Automatic_Calibration.
+function Automatic_Calibration_Callback(hObject, eventdata, handles)
+try
+    % hObject    handle to Automatic_Calibration (see GCBO)
+    % eventdata  reserved - to be defined in a future version of MATLAB
+    % handles    structure with handles and user data (see GUIDATA)
+    
+    handles = guidata(handles.figure1);
+    debug = getappdata(handles.figure1, 'debug_mode');
+    if debug
+        disp('in axes1_buttonDownFcn');
+    end
+    
+    % How close to the correct intensity do we want to go before we
+    % consider ourselves done. Slack = 0.05 means that a 5% deviation from
+    % the correct intensity within a given 100 nm interval is ok. 
+    slack = 0.05;
+    tight = false;
+    i = 0;
+    allowed_iterations = 4;
+    while tight == false && i < allowed_iterations
+        i = i + 1;
+        if debug
+            disp(['i: ' num2str(i)]);
+        end
+        [tight, new_daq_voltage] = Auto_Calibrate(handles, slack);
+    end
+    
+    
+    
+catch err
     shutdown_simulator(handles);
     helpdlg(strcat(err.identifier, ': ', err.message));
     rethrow(err);
 end
 
+% Hint: get(hObject,'Value') returns toggle state of Automatic_Calibration

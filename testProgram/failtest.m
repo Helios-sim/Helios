@@ -9,9 +9,9 @@ max_V = max_I./forstarkningsfaktor;
 
 failvector = 0;
 for i=1:16
-    if(daq_spanning(i)>max_V(i))
-        failvector = failvector +1;
-        disp(['Failtest: Channel ' num2str(i) ' is too high'])
+    if daq_spanning(i)>max_V(i) || daq_spanning(i) < 0
+        failvector = failvector + 1;
+        disp(['Failtest: Channel ' num2str(i) ' is too high (or below zero)'])
     end
 end
 
