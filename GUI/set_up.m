@@ -99,6 +99,11 @@ try
     setappdata(handles.figure1, 'clickState', -1);
     setappdata(handles.figure1, 'measured_spectrum', []);
     
+    raw_spectrum_wanted = load('AM15');
+    wanted_spectrum = interp1(raw_spectrum_wanted(:,1),raw_spectrum_wanted(:,2),(400:1000))';
+    wanted_spectrum = [zeros(1,399) wanted_spectrum']';
+    setappdata(handles.figure1, 'wanted_spectrum', wanted_spectrum*0.8);
+    
     AM1_5 = ImportSpectrum('AM15');
     Quantum_spectrum = 0.5*ImportSpectrum('AM15');
     if (failtest(AM1_5) || failtest(Quantum_spectrum))
