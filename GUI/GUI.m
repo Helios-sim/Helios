@@ -159,6 +159,7 @@ try
     if debug
         disp('Starting measurement');
     end
+    setappdata(handles.figure1, 'clickState', -1);
     session = getappdata(handles.figure1,'session');
     if ~session.IsDone
         error('daqRuntime:sessionNotDone','The session is running a measurement, be patient.')
@@ -179,9 +180,9 @@ catch err
     if strcmp(err.identifier,'daqRuntime:sessionNotDone')
         helpdlg(err.message);
     else
-    shutdown_simulator(handles);
-    helpdlg(strcat(err.identifier, ': ', err.message));
-    rethrow(err);
+        shutdown_simulator(handles);
+        helpdlg(strcat(err.identifier, ': ', err.message));
+        rethrow(err);
     end
 end
 guidata(handles.figure1, handles);
@@ -227,10 +228,10 @@ try
     
     % fix so that it displays all the files in savedSpectrums
     if ~failtest(spectrum)
-    if debug
-        disp('~failtest(spectrum):')
-        disp(~failtest(spectrum));
-    end
+        if debug
+            disp('~failtest(spectrum):')
+            disp(~failtest(spectrum));
+        end
         setappdata(handles.figure1,'chosen_spectrum', spectrum);
     end
     
@@ -524,7 +525,7 @@ catch err
         rethrow(err);
     end
 end
-    
+
 %% --- Executes during object creation, after setting all properties.
 function R_edit_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to R_edit (see GCBO)
@@ -580,39 +581,51 @@ function ShowSpectrum_Callback(hObject, eventdata, handles)
 try
     handles = guidata(handles.figure1);
     debug = getappdata(handles.figure1, 'debug_mode');
-    [spectrum] = getSpectrum(handles);
+    measured_spectrum = getSpectrum(handles);
     axes(handles.axes1);
-    plot(spectrum);
+    cla;
+    plot(measured_spectrum);
+    xlabel('Våglängd [nm]')
+    ylabel('Fotoner/ ca 100µs')
+    axis([400 1000 0 max(measured_spectrum)*1.2])
     if debug
-        disp('In showSpectrum:');
+        disp('In showSpectrum: ');
         disp('spectrum: ');
-        disp(size(spectrum));
+        disp(size(measured_spectrum));
+        disp('clickState: ');
+        disp(getappdata(handles.figure1, 'clickState'));
     end
-guidata(handles.figure1, handles);
+    
+    setappdata(handles.figure1, 'clickState', 0);
+    setappdata(handles.figure1, 'measured_spectrum', measured_spectrum);
+    if debug
+        disp(getappdata(handles.figure1, 'clickState'));
+    end
+    guidata(handles.figure1, handles);
 catch err
     helpdlg(err.message);
     rethrow(err);
 end
 
 
-% --- Executes on mouse press over axes background.
+%% --- Executes on mouse press over axes background.
 function axes1_ButtonDownFcn(hObject, eventdata, handles)
 try
-% hObject    handle to axes1 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-handles = guidata(handles.figure1);
-debug = getappdata(handles.figure1, 'debug_mode');
-clickState = getappdata(handles.figure1, 'clickState');
-if debug
-    disp('in axes1_buttonDownFcn');
-    disp(clickState);
-end
-if (clickState == 0)
-    setappdata(handles.figure1, 'clickState', 1);
-    guidata(handles.figure1, handles);
-    manualAdjustment(handles);
-end
+    % hObject    handle to axes1 (see GCBO)
+    % eventdata  reserved - to be defined in a future version of MATLAB
+    % handles    structure with handles and user data (see GUIDATA)
+    handles = guidata(handles.figure1);
+    debug = getappdata(handles.figure1, 'debug_mode');
+    clickState = getappdata(handles.figure1, 'clickState');
+    if debug
+        disp('in axes1_buttonDownFcn');
+        disp(clickState);
+    end
+    if (clickState == 0)
+        setappdata(handles.figure1, 'clickState', 1);
+        guidata(handles.figure1, handles);
+        manualAdjustment(handles);
+    end
 catch err
     shutdown_simulator(handles);
     helpdlg(strcat(err.identifier, ': ', err.message));

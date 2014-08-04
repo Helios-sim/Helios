@@ -71,8 +71,9 @@ try
     
     %% Parameters for setup
     detail_level = 1;
-    max_current = ones(1,16);
-    amp_factor = ones(1,16);
+    %In channel order
+    max_current = [350 600 500 800 1000 1000 600 350 350 350 800 350 350 800 250 350]*10^-3;
+    amp_factor = [1.74 1.76 1.81 1.75 1.77 1.74 1.75 1.79 1.76 1.76 1.74 1.75 1.74 1.75 1.74 1.75];
     max_voltage = max_current./amp_factor;
     
     %setting up the rest of the user data and storing everything in the gui
@@ -91,11 +92,12 @@ try
     setappdata(handles.figure1, 'measurement_type', 'specificSpectrum');
     setappdata(handles.figure1, 'detail_level', detail_level);
     setappdata(handles.figure1, 'debug_mode', true);
-    setappdata(handles.figure1, 'spectrum_integration_time', 500000*detail_level);
+    setappdata(handles.figure1, 'spectrum_integration_time', 100000*detail_level);
     setappdata(handles.figure1, 'max_current', max_current);
     setappdata(handles.figure1, 'amp_factor', amp_factor);
     setappdata(handles.figure1, 'max_voltage', max_voltage);
-    setappdata(handles.figure1, 'clickState', 0);
+    setappdata(handles.figure1, 'clickState', -1);
+    setappdata(handles.figure1, 'measured_spectrum', []);
     
     AM1_5 = ImportSpectrum('AM15');
     Quantum_spectrum = 0.5*ImportSpectrum('AM15');
