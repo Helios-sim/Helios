@@ -7,7 +7,6 @@ function [ powerspectrum ] = Photon_Count_To_Power( photon_count, integration_ti
 %of the intensity (photon count) indicates the wavelength
 
 
-
 %Planck's constant (J*s)
 h = 6.62606957*10^-34;
 
@@ -15,16 +14,16 @@ h = 6.62606957*10^-34;
 c = 299792458;
 
 powerspectrum = zeros(1,length(photon_count));
-for i = 1:length(photon_count)
+for lambda = 1:length(photon_count)
     
-    powerspectrum(i) = h*c/i*photon_count(i)*integration_time;
+    powerspectrum(lambda) = h*c/(lambda*10^-9)*photon_count(lambda)/integration_time;
     
 end
 end
 
-%This is what happens in the loop, step by step
+%This is how we aquired the formula that happens appears in the loop
     
-    %     Energy_per_photon(i) = h*c / i;
-    %     measured_energy(i) = Energy_per_photon*measured_spectrum(i);
+    %     Energy_per_photon(lambda) = h*c / lambda;
+    %     measured_energy(lambda) = Energy_per_photon*photon_count(lambda);
     %
-    %     powerspectrum = measured_energy(i)*integration_time;
+    %     powerspectrum = measured_energy(lambda)/integration_time;

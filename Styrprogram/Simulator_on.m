@@ -20,7 +20,7 @@ try
 catch
     shutdown_simulator(handles);
     if strcmp(err.identifier, 'runtime:spectrumFault')
-        helpdlg(err.message);
+        uiwait(errordlg(err.message));
         return;
     else
         rethrow(err);

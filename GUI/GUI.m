@@ -106,7 +106,7 @@ try
     end
 catch err
     shutdown_simulator(handles);
-    helpdlg(strcat(err.identifier, ': ', err.message));
+    uiwait(errordlg(strcat(err.identifier, ': ', err.message)));
     rethrow(err);
 end
 
@@ -137,7 +137,7 @@ try
     
 catch err
     shutdown_simulator(handles);
-    helpdlg(strcat(err.identifier, ': ', err.message));
+    uiwait(errordlg(strcat(err.identifier, ': ', err.message)));
     rethrow(err);
 end
 
@@ -178,10 +178,10 @@ try
     end
 catch err
     if strcmp(err.identifier,'daqRuntime:sessionNotDone')
-        helpdlg(err.message);
+        uiwait(errordlg(err.message));
     else
         shutdown_simulator(handles);
-        helpdlg(strcat(err.identifier, ': ', err.message));
+        uiwait(errordlg(strcat(err.identifier, ': ', err.message)));
         rethrow(err);
     end
 end
@@ -239,10 +239,10 @@ catch err
     if strcmp(err.identifier,'MATLAB:load:couldNotReadFile');
         setappdata(handles.figure1,'chosen_spectrum', zeros(1,16));
     elseif strcmp(err.identifier,'runtimeError:spectrumFault')
-        helpdlg(err.message);
+        uiwait(errordlg(err.message));
     else
         shutdown_simulator(handles);
-        helpdlg(strcat(err.identifier, ': ', err.message));
+        uiwait(errordlg(strcat(err.identifier, ': ', err.message)));
         rethrow(err);
     end
 end
@@ -461,11 +461,11 @@ try
     
 catch err
     if strcmp(err.identifier, 'runtime:edit_error') || strcmp(err.identifier, 'runtime:forbidden_value')
-        helpdlg(err.message);
+        uiwait(errordlg(err.message));
         setappdata(handles.figure1, 'illuminated_area', 10);
         set(handles.Illuminated_area_edit,'String','10');
     else
-        helpdlg(err.message);
+        uiwait(errordlg(err.message));
         rethrow(err);
     end
 end
@@ -517,7 +517,7 @@ try
     
 catch err
     if strcmp(err.identifier, 'runtime:edit_error') || strcmp(err.identifier, 'runtime:forbidden_value')
-        helpdlg(err.message);
+        uiwait(errordlg(err.message));
         setappdata(handles.figure1, 'R', 10);
         set(handles.R_edit,'String','10');
     else
@@ -567,7 +567,7 @@ try
     end
 catch err
     shutdown_simulator(handles);
-    helpdlg(strcat(err.identifier, ': ', err.message));
+    uiwait(errordlg(strcat(err.identifier, ': ', err.message)));
     rethrow(err);
 end
 guidata(handles.figure1, handles);
@@ -581,29 +581,36 @@ function ShowSpectrum_Callback(hObject, eventdata, handles)
 try
     handles = guidata(handles.figure1);
     debug = getappdata(handles.figure1, 'debug_mode');
-    measured_spectrum = getSpectrum(handles);
-    axes(handles.axes1);
-    cla;
-    plot(measured_spectrum);
-    xlabel('Våglängd [nm]')
-    ylabel('Fotoner/ ca 100µs')
-    axis([400 1000 0 max(measured_spectrum)*1.2])
+    [measured_spectrum, success] = getSpectrum(handles);
+    
     if debug
         disp('In showSpectrum: ');
         disp('spectrum: ');
         disp(size(measured_spectrum));
         disp('clickState: ');
         disp(getappdata(handles.figure1, 'clickState'));
+        
+        
     end
     
-    setappdata(handles.figure1, 'clickState', 0);
+    if success
+        axes(handles.axes1);
+        cla;
+        plot(measured_spectrum);
+        xlabel('Våglängd [nm]')
+        ylabel('Effekt [W]')
+        axis([400 1000 0 max(measured_spectrum)*1.2])
+        setappdata(handles.figure1, 'clickState', 0);
     setappdata(handles.figure1, 'measured_spectrum', measured_spectrum);
+        
+    end
+    
     if debug
-        disp(getappdata(handles.figure1, 'clickState'));
+        disp(['clickState: ' num2str(getappdata(handles.figure1, 'clickState'))]);
     end
     guidata(handles.figure1, handles);
 catch err
-    helpdlg(err.message);
+    uiwait(errordlg(err.message));
     rethrow(err);
 end
 
@@ -627,7 +634,7 @@ try
         manualAdjustment(handles);
     end
 catch err
-   
+    
 end
 
 
@@ -642,30 +649,76 @@ try
     handles = guidata(handles.figure1);
     debug = getappdata(handles.figure1, 'debug_mode');
     if debug
-        disp('in axes1_buttonDownFcn');
+        disp('in Automatic_Calibration_Callback');
     end
     
     % How close to the correct intensity do we want to go before we
     % consider ourselves done. Slack = 0.05 means that a 5% deviation from
-    % the correct intensity within a given 100 nm interval is ok. 
+    % the correct intensity within a given 100 nm interval is ok.
     slack = 0.05;
     tight = false;
     i = 0;
     allowed_iterations = 4;
-    while tight == false && i < allowed_iterations
+    success = true;
+    while tight == false && i < allowed_iterations && success
         i = i + 1;
         if debug
-            disp(['i: ' num2str(i)]);
+            disp(['Auto_Calibrate is about to begin its : ' num2str(i) ' iteration']);
         end
-        [tight, new_daq_voltage] = Auto_Calibrate(handles, slack);
+        [tight, new_daq_voltage, success] = Auto_Calibrate(handles, slack);
+        
     end
     
     
     
 catch err
     shutdown_simulator(handles);
-    helpdlg(strcat(err.identifier, ': ', err.message));
+    uiwait(errordlg(strcat(err.identifier, ': ', err.message)));
     rethrow(err);
 end
 
 % Hint: get(hObject,'Value') returns toggle state of Automatic_Calibration
+
+
+% --- Executes when user attempts to close figure1.
+function figure1_CloseRequestFcn(hObject, eventdata, handles)
+% hObject    handle to figure1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+try
+    % Hint: delete(hObject) closes the figure
+    shutdown_simulator(handles);
+    
+    debug = getappdata(handles.figure1, 'debug_mode');
+    if debug
+        disp('CloseRequest')
+    end
+    
+    delete(hObject);
+catch err
+    
+    uiwait(errordlg(err.message));
+    
+end
+
+
+
+% --- Executes during object deletion, before destroying properties.
+function axes1_DeleteFcn(hObject, eventdata, handles)
+% hObject    handle to axes1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+try
+    delete(hObject);
+    
+catch err
+    if strcmp (err.identifier, 'MATLAB:ginput:FigureDeletionPause')
+        if debug
+            disp('MATLAB:ginput:Interrupted')
+        end
+    else
+        rethrow(err);
+    end
+end
+    

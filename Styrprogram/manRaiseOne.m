@@ -32,7 +32,7 @@ try
         plot(wavelength, max_volt(chosen_diode)*scalefactor, 'k*')
         axis([400 1000 0 top_y*1.2])
         xlabel('Våglängd [nm]')
-        ylabel('Fotoner/ ca 100µs')
+        ylabel('Effekt [W]')
         if(now_volt(chosen_diode) == max_volt(chosen_diode))
             power = 'Max';
             powercolor = 'r';
@@ -82,7 +82,6 @@ try
     guidata(handles.figure1, handles);
     
 catch err
-    helpdlg(err.message);
     rethrow(err);
 end
 

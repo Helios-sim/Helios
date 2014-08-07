@@ -70,13 +70,15 @@ try
         plot([400, 1000], [black_bar, black_bar], 'b')
         plot(maxed,'k')
         xlabel('Våglängd [nm]')
-        ylabel('Fotoner/ ca 100µs')
+        ylabel('Effekt [W]')
         axis([400 1000 0 top_y*1.2])
         
+        
+        
         % Add text and a really expensive cool click function
-        startText = text(420, start_bar*scale + start_bar*0.05,'Start', 'Color', start_color, 'BackgroundColor',[0.7 0.9 0.7]);
-        cleanText = text(880, clean_bar*scale + start_bar*0.05,'Rent spektrum', 'Color', clean_color, 'BackgroundColor',[0.7 0.9 0.7]);
-        %         text(680, max_bar*scale + start_bar*0.05, 'all max', 'Color', 'r');
+        startText = text(420, start_bar*scale,'Start', 'Color', start_color, 'BackgroundColor',[0.7 0.9 0.7]);
+        cleanText = text(880, clean_bar*scale,'Rent spektrum', 'Color', clean_color, 'BackgroundColor',[0.7 0.9 0.7]);
+        text(680, max_bar*scale, 'Alla max', 'Color', 'r', 'BackgroundColor', [1 1 1]);
         
         
         %Let the user click in the plot to move the intensities
@@ -121,7 +123,6 @@ try
                         maxed(diodeplacements(i)) = top_y/4;
                     else
                         now_volt(i) = saved_volt(i)*y_cord/scale;
-                        disp(['multiplier: ' num2str(y_cord/scale)])
                         maxed(diodeplacements(i)) = 0;
                     end
                     black_bar = y_cord;
@@ -145,12 +146,7 @@ try
     setappdata(handles.figure1, 'chosen_spectrum', now_volt)
     guidata(handles.figure1, handles);
 catch err
-    if(strcmp(err.identifier, 'MATLAB:ginput:FigureDeletionPause'))
-        helpdlg(err.message);
         rethrow(err);
-    else
-        rethrow(err);
-    end
 end
 
 function textClicked(clickedString, selectClean, selectStart)

@@ -6,8 +6,8 @@ try
     measured_spectrum = getappdata(handles.figure1, 'measured_spectrum');
     axes = handles.axes1;
     if debug
-        disp('axes: ')
-        disp(axes);
+        disp('in manualAdjustment')
+        disp(['axes: ' num2str(axes)]);
     end
     
     while (clickState == 1)
@@ -37,7 +37,7 @@ try
         plot(ydiodes,'k');
         plot(measured_spectrum)
         xlabel('Våglängd [nm]')
-        ylabel('Fotoner/ ca 100µs')
+        ylabel('Effekt [W]')
         axis([400 1000 0 top_y*1.2])
         
         [x_cord, y_cord, button, axn] = ginputax(axes,1);
@@ -65,26 +65,21 @@ try
             cla;
             plot(measured_spectrum)
             xlabel('Våglängd [nm]')
-            ylabel('Fotoner/ ca 100µs')
+            ylabel('Effekt [W]')
             axis([400 1000 0 top_y*1.2])
             clickState = 0;%Redundance?
             setappdata(handles.figure1, 'clickState' ,0);
             guidata(handles.figure1, handles);
             
         end
-        measured_spectrum = getSpectrum(handles);
+        [measured_spectrum, ~] = getSpectrum(handles);
     end
     guidata(handles.figure1, handles);
     
 catch err
     if(strcmp(err.identifier, 'MATLAB:undefinedVarOrFunction'))
-        helpdlg(err.message);
-        rethrow(err);
-    elseif (strcmp(err.identifier, 'MATLAB:ginput:FigureDeletionPause'))
-        helpdlg(err.message);
-        rethrow(err);
-    else
-        rethrow(err);
+        uiwait(errordlg(err.message));
     end
+        rethrow(err);
 end
 end
