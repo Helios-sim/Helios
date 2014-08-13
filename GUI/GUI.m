@@ -581,6 +581,13 @@ function ShowSpectrum_Callback(hObject, eventdata, handles)
 try
     handles = guidata(handles.figure1);
     debug = getappdata(handles.figure1, 'debug_mode');
+    wanted_spectrum = getappdata(handles.figure1, 'wanted_spectrum');
+    
+    axes(handles.axes1);
+    cla;
+    plot(wanted_spectrum,'color',[0.7 0.7 0.7]);
+    axis([400 1000 0 max(wanted_spectrum)*1.2])
+        
     [measured_spectrum, success] = getSpectrum(handles);
     
     if debug
@@ -590,19 +597,15 @@ try
         disp('clickState: ');
         disp(getappdata(handles.figure1, 'clickState'));
         
-        
     end
     
     if success
-        axes(handles.axes1);
-        cla;
         plot(measured_spectrum);
         xlabel('Våglängd [nm]')
         ylabel('Effekt [W]')
         axis([400 1000 0 max(measured_spectrum)*1.2])
         setappdata(handles.figure1, 'clickState', 0);
-    setappdata(handles.figure1, 'measured_spectrum', measured_spectrum);
-        
+        setappdata(handles.figure1, 'measured_spectrum', measured_spectrum);
     end
     
     if debug
@@ -666,10 +669,7 @@ try
             disp(['Auto_Calibrate is about to begin its : ' num2str(i) ' iteration']);
         end
         [tight, new_daq_voltage, success] = Auto_Calibrate(handles, slack);
-        
     end
-    
-    
     
 catch err
     shutdown_simulator(handles);
@@ -680,7 +680,7 @@ end
 % Hint: get(hObject,'Value') returns toggle state of Automatic_Calibration
 
 
-% --- Executes when user attempts to close figure1.
+%% --- Executes when user attempts to close figure1.
 function figure1_CloseRequestFcn(hObject, eventdata, handles)
 % hObject    handle to figure1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -704,7 +704,7 @@ end
 
 
 
-% --- Executes during object deletion, before destroying properties.
+%% --- Executes during object deletion, before destroying properties.
 function axes1_DeleteFcn(hObject, eventdata, handles)
 % hObject    handle to axes1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -721,4 +721,5 @@ catch err
         rethrow(err);
     end
 end
-    
+
+%% End
