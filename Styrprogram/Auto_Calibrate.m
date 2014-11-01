@@ -25,10 +25,16 @@ try
         tight = true;
         
         %In order of wavelengths
-        max_I= [350 350 250 350 350 350 350 350 600 600 800 800 800 1000 1000 500]*0.001;
-        forstarkningsfaktor = ChaToWave([1.74 1.76 1.81 1.75 1.77 1.74 1.75 1.79 1.76 1.76 1.74 1.75 1.74 1.75 1.74 1.75]);
+        max_I = [350 350 250 350 350 350 350 350 600 600 800 800 800 1000 1000 500]*0.001;
+        FF = getappdata(handles.figure1, 'amp_factor');
+        forstarkningsfaktor = ChaToWave(FF);
         max_voltage = max_I./forstarkningsfaktor;
         
+        for i = 1:16
+            if max_voltage(i) > 10
+                max_voltage(i) = 10;
+            end
+        end
         
         %Calibrate_Spectrum does all the calculations with a voltage-vector
         %arranged in rising wavelength order.

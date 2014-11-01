@@ -33,7 +33,7 @@ try
     session.prepare;
     
     % mätningen utförs
-    [measure_data, timestamps, triggerTime] = session.startForeground;
+    [measure_data, timestamps, ~] = session.startForeground;
     
     % stäng av
     shutdown_simulator(handles);

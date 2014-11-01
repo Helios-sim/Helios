@@ -38,22 +38,6 @@ try
     session.addAnalogOutputChannel('cDAQ1Mod1','ao15','Voltage');
     
     % secondary analog output
-    %     session.addAnalogOutputChannel('cDAQ1Mod1','ao0','Voltage');
-    %     session.addAnalogOutputChannel('cDAQ1Mod1','ao1','Voltage');
-    %     session.addAnalogOutputChannel('cDAQ1Mod1','ao2','Voltage');
-    %     session.addAnalogOutputChannel('cDAQ1Mod1','ao3','Voltage');
-    %     session.addAnalogOutputChannel('cDAQ1Mod1','ao4','Voltage');
-    %     session.addAnalogOutputChannel('cDAQ1Mod1','ao5','Voltage');
-    %     session.addAnalogOutputChannel('cDAQ1Mod1','ao6','Voltage');
-    %     session.addAnalogOutputChannel('cDAQ1Mod1','ao7','Voltage');
-    %     session.addAnalogOutputChannel('cDAQ1Mod1','ao8','Voltage');
-    %     session.addAnalogOutputChannel('cDAQ1Mod1','ao9','Voltage');
-    %     session.addAnalogOutputChannel('cDAQ1Mod1','ao10','Voltage');
-    %     session.addAnalogOutputChannel('cDAQ1Mod1','ao11','Voltage');
-    %     session.addAnalogOutputChannel('cDAQ1Mod1','ao12','Voltage');
-    %     session.addAnalogOutputChannel('cDAQ1Mod1','ao13','Voltage');
-    %     session.addAnalogOutputChannel('cDAQ1Mod1','ao14','Voltage');
-    %     session.addAnalogOutputChannel('cDAQ1Mod1','ao15','Voltage');
     
     % Analog input
     ai0 = session.addAnalogInputChannel('cDAQ1Mod3','ai0','Voltage');
@@ -64,7 +48,7 @@ try
     %ai0.TerminalConfig = 'Differential';
     %ai1.TerminalConfig = 'Differential';
     
-    %% pulling down the output on the DAQ to make sure no leds are damaged
+    %% pulling down the output on the DAQ to make sure no leds are damaged on startup
     session.queueOutputData(zeros(1,16));
     session.prepare;
     session.startForeground;
@@ -72,9 +56,15 @@ try
     %% Parameters for setup
     detail_level = 1;
     %In channel order
-    max_current = [350 600 500 800 1000 1000 600 350 350 350 800 350 350 800 250 350]*10^-3;
-    amp_factor = [1.74 1.76 1.81 1.75 1.77 1.74 1.75 1.79 1.76 1.76 1.74 1.75 1.74 1.75 1.74 1.75];
+    % diode wl =  [720 980 830 590 520 490 750 660 630 780 450 420 880 945 680 515]
+    max_current = [600 500 800 350 350 250 800 350 350 800 350 350 1000 1000 600 350]*10^-3;
+    amp_factor = [62   62  100 34  34 27.5 100 34  34  100 34  34  122 122 62  34]*10^-3;
     max_voltage = max_current./amp_factor;
+    for i = 1:16
+        if max_voltage(i) > 10
+            max_voltage(i) = 10;
+        end
+    end
     
     %setting up the rest of the user data and storing everything in the gui
     %appdata and checking if the chosen spectrum is allowed to begin with
@@ -99,13 +89,11 @@ try
     setappdata(handles.figure1, 'clickState', -1);
     setappdata(handles.figure1, 'measured_spectrum', []);
     
-    raw_spectrum_wanted = load('AM15');
-    wanted_spectrum = interp1(raw_spectrum_wanted(:,1),raw_spectrum_wanted(:,2),(400:1000))';
-    wanted_spectrum = [zeros(1,399) wanted_spectrum']';
-    setappdata(handles.figure1, 'wanted_spectrum', wanted_spectrum*0.8);
+    wanted_spectrum = ImportRawSpectrum('AM15.spec');
+    setappdata(handles.figure1, 'wanted_spectrum', wanted_spectrum*0.9);
     
-    AM1_5 = ImportSpectrum('AM15');
-    Quantum_spectrum = 0.5*ImportSpectrum('AM15');
+    AM1_5 = ImportSpectrum('AM15.spec');
+    Quantum_spectrum = 0.5*ImportSpectrum('AM15.spec');
     if (failtest(AM1_5) || failtest(Quantum_spectrum))
         error('setup:spectrumFault','The chosen spectrum contains illegal voltage levels.');
     end

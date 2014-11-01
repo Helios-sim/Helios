@@ -17,7 +17,7 @@ try
     end
     session.outputSingleScan([chosen_spectrum]);
     
-catch
+catch err
     shutdown_simulator(handles);
     if strcmp(err.identifier, 'runtime:spectrumFault')
         uiwait(errordlg(err.message));

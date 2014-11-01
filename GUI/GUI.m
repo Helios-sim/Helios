@@ -207,63 +207,6 @@ else
 end
 
 
-%% --- Executes on selection change in Chosen_spektrum.
-function Chosen_spektrum_Callback(hObject, eventdata, handles)
-% hObject    handle to Chosen_spektrum (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-% This function sets the spectrum for the IV-measurement to be the one
-% in the file chosen from the drop down menu.
-handles = guidata(handles.figure1);
-try
-    debug = getappdata(handles.figure1, 'debug_mode');
-    if debug
-        disp('A new spectrum has been chosen, checking if proper');
-    end
-    contents = cellstr(get(hObject,'String'));
-    spectrum = ImportSpectrum(contents{get(hObject,'Value')});
-    if debug
-        disp(spectrum);
-    end
-    
-    % fix so that it displays all the files in savedSpectrums
-    if ~failtest(spectrum)
-        if debug
-            disp('~failtest(spectrum):')
-            disp(~failtest(spectrum));
-        end
-        setappdata(handles.figure1,'chosen_spectrum', spectrum);
-    end
-    
-catch err
-    if strcmp(err.identifier,'MATLAB:load:couldNotReadFile');
-        setappdata(handles.figure1,'chosen_spectrum', zeros(1,16));
-    elseif strcmp(err.identifier,'runtimeError:spectrumFault')
-        uiwait(errordlg(err.message));
-    else
-        shutdown_simulator(handles);
-        uiwait(errordlg(strcat(err.identifier, ': ', err.message)));
-        rethrow(err);
-    end
-end
-guidata(handles.figure1, handles);
-
-
-%% --- Executes during object creation, after setting all properties.
-function Chosen_spektrum_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to Chosen_spektrum (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% The drop down menu will properly display all the contents of
-% "/SparadeSpectrum" in future releases.
-
-
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
 %% --- Exectues when the From_IV tab is altered
 function From_IV_edit_Callback(hObject, eventdata, handles)
 % hObject    handle to From_IV_edit (see GCBO)
@@ -721,5 +664,36 @@ catch err
         rethrow(err);
     end
 end
+
+
+
+%% --- Executes on button press in Choose_spectrum.
+function Choose_spectrum_Callback(hObject, eventdata, handles)
+% hObject    handle to Choose_spectrum (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+handles = guidata(handles.figure1);
+try
+    debug = getappdata(handles.figure1, 'debug_mode');
+    
+    if debug
+        disp('A new spectrum has been chosen, checking if proper');
+    end
+    
+    FileName = uigetfile('SparadeSpektrum/*.spec','Välj fil att ladda spektrumet ifrån');
+    spectrum = ImportRawSpectrum(FileName);
+    
+    setappdata(handles.figure1, 'wanted_spectrum', spectrum);
+    
+    if debug
+        disp(size(spectrum));
+    end
+    
+catch err
+        shutdown_simulator(handles);
+        uiwait(errordlg(strcat(err.identifier, ': ', err.message)));
+        rethrow(err);
+end
+guidata(handles.figure1, handles);
 
 %% End
