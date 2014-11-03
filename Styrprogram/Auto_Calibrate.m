@@ -2,10 +2,9 @@ function [ tight, new_daq_voltage, success ] = Auto_Calibrate(handles, slack)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 try
-    
+    Simulator_on(handles);
     tight = false;
     new_daq_voltage = zeros(1,16);
-    success = false;
     
     handles = guidata(handles.figure1);
     debug = getappdata(handles.figure1, 'debug_mode');
@@ -25,7 +24,8 @@ try
         tight = true;
         
         %In order of wavelengths
-        max_I = [350 350 250 350 350 350 350 350 600 600 800 800 800 1000 1000 500]*0.001;
+        max_I = getappdata(handles.figure1, 'max_current');
+        max_I = ChaToWave(max_I);
         FF = getappdata(handles.figure1, 'amp_factor');
         forstarkningsfaktor = ChaToWave(FF);
         max_voltage = max_I./forstarkningsfaktor;
@@ -123,7 +123,7 @@ try
         new_daq_voltage = WaveToCha(tmp_voltage);
         
         if failtest(new_daq_voltage)
-            error('CalibrateSpectrum:Bad_spectrum', 'The function which calibrates the spectrum made a misstake, which resulted in too high output voltages');
+            error('CalibrateSpectrum:Bad_spectrum', 'The function which calibrates the spectrum made a mistake, which resulted in too high output voltages');
         end
         
         setappdata(handles.figure1, 'chosen_spectrum', new_daq_voltage);

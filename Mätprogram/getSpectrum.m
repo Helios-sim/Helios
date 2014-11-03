@@ -58,20 +58,20 @@ try
     spectrumdata = [zeros(1,399) measured_spectrum];
     
     %When the spectrometer aquires a spectrum, there will be unwanted photons
-    %kind of evenly distributed across the interval. This step part is to
-    %reduce this photon-noise.
-    [~, peakindex] = max(spectrumdata);
-    peakindex = round(peakindex);
-    if peakindex > 720
-        average = mean(round(spectrumdata(400:peakindex-100)));
-    else
-        average = mean(round(spectrumdata(peakindex+100:1000)));
-    end
-    spectrumdata = spectrumdata - average;
-    spectrumdata(1:peakindex-100) = 0;
-    spectrumdata(peakindex+100:1000) = 0;
-    negatives = spectrumdata<0;
-    spectrumdata(negatives) = 0;
+    %approximately evenly distributed across the interval. This step is to
+    %reduce the photon-noise.
+%     [~, peakindex] = max(spectrumdata);
+%     peakindex = round(peakindex);
+%     if peakindex > 720
+%         average = mean(round(spectrumdata(400:peakindex-100)));
+%     else
+%         average = mean(round(spectrumdata(peakindex+100:1000)));
+%     end
+%     spectrumdata = spectrumdata - average;
+%     spectrumdata(1:peakindex-100) = 0;
+%     spectrumdata(peakindex+100:1000) = 0;
+%     negatives = spectrumdata<0;
+%     spectrumdata(negatives) = 0;
     
     %We've got photons vs wavelength, but we want power vs wavelength.
     %IntegrationTime is measured in microseconds

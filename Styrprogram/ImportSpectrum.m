@@ -40,8 +40,8 @@ for i = 1:16
 end
 
 % Kontrollerar att ingen spänning blir för hög
-if failtest(daq_spanning)
-    error('runtimeError:spectrumFault','the imported spectrum cannot be represented.');
-end
+% if failtest(daq_spanning)
+%     error('runtimeError:spectrumFault','the imported spectrum cannot be represented.');
+% end
 end
 

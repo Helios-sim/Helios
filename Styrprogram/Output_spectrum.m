@@ -15,7 +15,7 @@ try
     if failtest(chosen_spectrum)
         error('runtime:spectrumFault', 'The chosen spectrum contains illegal voltage levels');
     end
-    spectrum = ones(1,1/length_of_step)'*(chosen_spectrum);
+    spectrum = ones(1,floor(1/length_of_step))'*(chosen_spectrum);
     
     if debug
         disp('in outputSpectrum:');
