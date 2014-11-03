@@ -16,7 +16,8 @@ c = 299792458;
 powerspectrum = zeros(1,length(photon_count));
 for lambda = 1:length(photon_count)
     
-    powerspectrum(lambda) = h*c/(lambda*10^-9)*photon_count(lambda)/integration_time;
+    powerspectrum(lambda) = (h*c*photon_count(lambda)/(lambda*10^-9))/(integration_time*0.83*10^-4);
+       %        (E*number of photons caught)/(total integration time*area)
     
 end
 end
