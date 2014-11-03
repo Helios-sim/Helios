@@ -13,14 +13,19 @@ h = 6.62606957*10^-34;
 %Speed of light (m/s)
 c = 299792458;
 
+photon_count
+integration_time
+
 powerspectrum = zeros(1,length(photon_count));
 for lambda = 1:length(photon_count)
     
-    powerspectrum(lambda) = (h*c*photon_count(lambda)/(lambda*10^-9))/(integration_time*0.83*10^-4);
+    powerspectrum(lambda) = (h*c*photon_count(lambda)/(lambda*10^-9))/(integration_time*pi*0.7^2*10^-4);
        %        (E*number of photons caught)/(total integration time*area)
     
 end
 end
+
+
 
 %This is how we aquired the formula that appears in the loop
     

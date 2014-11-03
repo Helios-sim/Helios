@@ -530,7 +530,7 @@ try
     
     axes(handles.axes1);
     cla;
-    plot(wanted_spectrum/max(wanted_spectrum)*max(measured_spectrum),'color',[1 0 0]);
+    plot(wanted_spectrum*0.7/max(wanted_spectrum)*max(measured_spectrum),'color',[1 0 0]);
     axis([400 1000 0 max(wanted_spectrum)*1.2])
         
     
