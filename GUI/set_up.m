@@ -54,10 +54,10 @@ try
     session.startForeground;
     
     %% Parameters for setup
-    detail_level = 1;
+    detail_level = 2;
     %In channel order
     % diode wl =  [720 980 830 590 520 490 750 660 630 780 450 420 880 945 680 515]
-    max_current = [600 500 800 350 350 250 800 350 350 800 350 350 1000 1000 600 350]*10^-3;
+    max_current = [600 500 800 350 350 250 800 350 350 800 350 350 1000 1000 600 350]*0.9*10^-3;
     amp_factor = [62   62  100 34  34 27.5 100 34  34  100 34  34  122 122 62  34]*10^-3;
     max_voltage = max_current./amp_factor;
     for i = 1:16
@@ -92,8 +92,9 @@ try
     wanted_spectrum = ImportRawSpectrum('AM15.spec');
     setappdata(handles.figure1, 'wanted_spectrum', wanted_spectrum*0.9);
     
-    AM1_5 = ImportSpectrum('AM15.spec');
-    Quantum_spectrum = 0.5*ImportSpectrum('AM15.spec');
+    AM1_5 = [8.60808459859326 6.84331797235023 5.16302198319328 9 8.53835294117647 7.99056000000000 3.78514285714286 7.05881866125761 9 2.56731428571429 5.20588235294118 5.18823529411765 6.55737704918033 1.52559384409502 8.35009509352128 8.53835294117647];
+    
+    Quantum_spectrum = 0.5*AM1_5;
     if (failtest(AM1_5) || failtest(Quantum_spectrum))
         error('setup:spectrumFault','The chosen spectrum contains illegal voltage levels.');
     end

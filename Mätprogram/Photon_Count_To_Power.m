@@ -22,7 +22,7 @@ for lambda = 1:length(photon_count)
 end
 end
 
-%This is how we aquired the formula that happens appears in the loop
+%This is how we aquired the formula that appears in the loop
     
     %     Energy_per_photon(lambda) = h*c / lambda;
     %     measured_energy(lambda) = Energy_per_photon*photon_count(lambda);

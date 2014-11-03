@@ -497,16 +497,16 @@ try
     end
     if button_state == get(hObject, 'Max')
         if debug
-            disp('simulator turning off');
+            disp('simulator turning on');
         end
-        set(hObject, 'String', 'Släck solsimulator');
+        set(hObject, 'String', 'Switch off');
         Simulator_on(handles);
     else
         if debug
-            disp('simulator turning on');
+            disp('simulator turning off');
         end
         shutdown_simulator(handles);
-        set(hObject, 'String', 'Tänd solsimulator');
+        set(hObject, 'String', 'Switch on');
     end
 catch err
     shutdown_simulator(handles);
@@ -526,12 +526,14 @@ try
     debug = getappdata(handles.figure1, 'debug_mode');
     wanted_spectrum = getappdata(handles.figure1, 'wanted_spectrum');
     
+    [measured_spectrum, success] = getSpectrum(handles);
+    
     axes(handles.axes1);
     cla;
-    plot(wanted_spectrum,'color',[0.7 0.7 0.7]);
+    plot(wanted_spectrum/max(wanted_spectrum)*max(measured_spectrum),'color',[1 0 0]);
     axis([400 1000 0 max(wanted_spectrum)*1.2])
         
-    [measured_spectrum, success] = getSpectrum(handles);
+    
     
     if debug
         disp('In showSpectrum: ');
@@ -543,10 +545,12 @@ try
     end
     
     if success
+        hold on
         plot(measured_spectrum);
-        xlabel('Våglängd [nm]')
-        ylabel('Effekt [W]')
+        xlabel('Wavelength [nm]')
+        ylabel('Power [W]')
         axis([400 1000 0 max(measured_spectrum)*1.2])
+        hold off
         setappdata(handles.figure1, 'clickState', 0);
         setappdata(handles.figure1, 'measured_spectrum', measured_spectrum);
     end
@@ -613,6 +617,7 @@ try
         end
         [tight, new_daq_voltage, success] = Auto_Calibrate(handles, slack);
     end
+    shutdown_simulator(handles);
     
 catch err
     shutdown_simulator(handles);
