@@ -92,13 +92,18 @@ try
     wanted_spectrum = ImportRawSpectrum('AM15.spec');
     setappdata(handles.figure1, 'wanted_spectrum', wanted_spectrum*0.9);
     
-    AM1_5 = [8.60808459859326 6.84331797235023 5.16302198319328 9 8.53835294117647 7.99056000000000 3.78514285714286 7.05881866125761 9 2.56731428571429 5.20588235294118 5.18823529411765 6.55737704918033 1.52559384409502 8.35009509352128 8.53835294117647];
+    AM1_5 = 0.5*[8.60808459859326 6.84331797235023 5.16302198319328 9 8.53835294117647 7.99056000000000 3.78514285714286 7.05881866125761 9 2.56731428571429 5.20588235294118 5.18823529411765 6.55737704918033 1.52559384409502 8.35009509352128 8.53835294117647];
     
+%     %Used to start simulator only with the 980 nm diode
+%     only980 = [0 6.84331797235023 0 0 0 0 0 0 0 0 0 0 0 0 0 0];
+%     setappdata(handles.figure1, 'chosen_spectrum',only980);
+
     Quantum_spectrum = 0.5*AM1_5;
     if (failtest(AM1_5) || failtest(Quantum_spectrum))
         error('setup:spectrumFault','The chosen spectrum contains illegal voltage levels.');
     end
     setappdata(handles.figure1, 'chosen_spectrum', AM1_5);
+
     setappdata(handles.figure1, 'quantum_spectrum', Quantum_spectrum);
     
     guidata(hObject, handles);

@@ -1,20 +1,27 @@
-function Simulator_on(handles)
+function Simulator_on(handles, hObject)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 try
+    debug = getappdata(handles.figure1, 'debug_mode');
+    button_state = get(hObject, 'Value');
     session = getappdata(handles.figure1,'session');
-    appdata = getappdata(handles.figure1);
-    debug = appdata.debug_mode;
-    chosen_spectrum = appdata.chosen_spectrum;
+    chosen_spectrum = getappdata(handles.figure1,'chosen_spectrum');
     
     if debug
+        disp('button_state: ');
+        disp(button_state);
+        disp('simulator turning on');
         disp('simulating spectrum:');
         disp(chosen_spectrum);
     end
     
+    set(hObject, 'String', 'Switch off');
+    set(hObject, 'Value', get(hObject, 'Max'));
+    
     if failtest(chosen_spectrum)
         error('runtime:spectrumFault', 'The chosen spectrum contains illegal voltage levels');
     end
+    
     session.outputSingleScan([chosen_spectrum]);
     
 catch err

@@ -1,8 +1,13 @@
-function manRaiseOne( handles, x_cord, measured_spectrum )
+function manRaiseOne( handles, x_cord, measured_spectrum,wanted_spectrum )
 try
     handles = guidata(handles.figure1);
     %manRaiseOne allows the user to manually change the intensity for one diode at a time
     debug = getappdata(handles.figure1, 'debug_mode');
+    
+    if debug
+       disp('In manRaiseOne'); 
+    end
+    
     button = 1;
     
     [wavelength, chosen_diode] = FindClickedDiode ( x_cord );
@@ -25,9 +30,9 @@ try
     %doesn't update until after right-click
     axes = handles.axes1;
     while button ~= 3
-        
         cla;
         plot(measured_spectrum);
+        plot(wanted_spectrum*scalefactor,'r');
         plot(wavelength, now_volt(chosen_diode)*scalefactor, 'k*')
         plot(wavelength, max_volt(chosen_diode)*scalefactor, 'k*')
         axis([400 1000 0 top_y*1.2])
@@ -43,6 +48,7 @@ try
         
         % Add text
         text(wavelength + 15, now_volt(chosen_diode)*scalefactor, power, 'Color', powercolor);
+        text(wavelength, max_volt(chosen_diode)*scalefactor*1.1, strcat(num2str(wavelength), 'nm'),'Color','b');
         
         [x_cord, y_cord, button] = ginputax(axes,1);
         
@@ -82,6 +88,9 @@ try
     guidata(handles.figure1, handles);
     
 catch err
+    if(strcmp(err.identifier, 'MATLAB:ginput:FigureDeletionPause'))
+        disp(errordlg(err.message))
+    end
     rethrow(err);
 end
 

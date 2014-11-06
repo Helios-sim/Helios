@@ -489,25 +489,18 @@ function Simulator_on_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 handles = guidata(handles.figure1);
 try
-    debug = getappdata(handles.figure1, 'debug_mode');
     button_state = get(hObject, 'Value');
-    if debug
-        disp('button_state: ');
-        disp(button_state);
-    end
     if button_state == get(hObject, 'Max')
-        if debug
-            disp('simulator turning on');
-        end
-        set(hObject, 'String', 'Switch off');
-        Simulator_on(handles);
+        Simulator_on(handles,hObject);
     else
+        shutdown_simulator(handles);
+        debug = getappdata(handles.figure1, 'debug_mode');
         if debug
             disp('simulator turning off');
         end
-        shutdown_simulator(handles);
         set(hObject, 'String', 'Switch on');
     end
+    
 catch err
     shutdown_simulator(handles);
     uiwait(errordlg(strcat(err.identifier, ': ', err.message)));
@@ -528,29 +521,29 @@ try
     
     [measured_spectrum, success] = getSpectrum(handles);
     
-    axes(handles.axes1);
-    cla;
-    plot(wanted_spectrum/max(wanted_spectrum)*max(measured_spectrum),'color',[1 0 0]);
-    axis([400 1000 0 max(wanted_spectrum)*1.2])
-        
-    
-    
     if debug
         disp('In showSpectrum: ');
-        disp('spectrum: ');
+        disp('size of measured spectrum: ');
         disp(size(measured_spectrum));
         disp('clickState: ');
         disp(getappdata(handles.figure1, 'clickState'));
+    
+    axes(handles.axes1);
+    cla;
+    %Scales the measured spectrum so both can be seen in the same plot
+    plot(wanted_spectrum/max(wanted_spectrum)*max(measured_spectrum),'color',[1 0 0]);
+    
+    axis([400 1000 0 max(wanted_spectrum)*1.2])
         
     end
     
     if success
-        hold on
-        plot(measured_spectrum);
+
+        plot(measured_spectrum, 'HitTest','off');
         xlabel('Wavelength [nm]')
         ylabel('Power [W]')
         axis([400 1000 0 max(measured_spectrum)*1.2])
-        hold off
+
         setappdata(handles.figure1, 'clickState', 0);
         setappdata(handles.figure1, 'measured_spectrum', measured_spectrum);
     end
@@ -576,15 +569,25 @@ try
     clickState = getappdata(handles.figure1, 'clickState');
     if debug
         disp('in axes1_buttonDownFcn');
+        disp('clickState: ');
         disp(clickState);
     end
     if (clickState == 0)
         setappdata(handles.figure1, 'clickState', 1);
         guidata(handles.figure1, handles);
         manualAdjustment(handles);
+        measured_spectrum = getappdata(handles.figure1,'measured_spectrum');
+        wanted_spectrum = getappdata(handles.figure1,'wanted_spectrum');
+        plot(wanted_spectrum/2/max(wanted_spectrum)*min(measured_spectrum),'color',[1 0 0]);
+        plot(measured_spectrum, 'HitTest','off')
+        xlabel('Våglängd [nm]')
+        ylabel('Effekt [Arbitrary]')
+        top_y = max(measured_spectrum);
+        axis([400 1000 0 top_y*1.2])
     end
 catch err
-    
+    uiwait(errordlg(err.message));
+    rethrow(err);
 end
 
 
@@ -701,4 +704,4 @@ catch err
 end
 guidata(handles.figure1, handles);
 
-%% End
+

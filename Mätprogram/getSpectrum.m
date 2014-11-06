@@ -27,9 +27,8 @@ try
         minIntTime = invoke(spectrometerObj, 'getMinimumIntegrationTime', spectrometerIndex);
         
         disp(['minIntTime: ' num2str(minIntTime)]);
-        disp(numOfSpectrometers);
-        disp(spectrometerName);
-        disp(spectrometerSerialNumber);
+        disp(['spectrometer name: ' spectrometerName]);
+        disp(['spectrometer name: ' spectrometerSerialNumber]);
         disp(strcat('IntegrationTime: ', num2str(integrationTime)));
         disp(strcat('spectrometerIndex: ', num2str(spectrometerIndex)));
         disp(strcat('channelIndex: ', num2str(channelIndex)));

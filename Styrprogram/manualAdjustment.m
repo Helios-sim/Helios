@@ -4,10 +4,12 @@ try
     debug = getappdata(handles.figure1, 'debug_mode');
     clickState = getappdata(handles.figure1, 'clickState');
     measured_spectrum = getappdata(handles.figure1, 'measured_spectrum');
+    wanted_spectrum = getappdata(handles.figure1, 'wanted_spectrum');
     axes = handles.axes1;
     if debug
         disp('in manualAdjustment')
         disp(['axes: ' num2str(axes)]);
+        disp(['clickstate: ' num2str(clickState)]);
     end
     
     while (clickState == 1)
@@ -34,10 +36,12 @@ try
         % Showing the diode spikes and the spectrum, left or right-click to proceed and right
         % click to go back
         cla;
-        plot(ydiodes,'k');
-        plot(measured_spectrum)
+        plot(wanted_spectrum/2/max(wanted_spectrum)*max(measured_spectrum),'color',[1 0 0]);
+        %         plot(wanted_spectrum,'HitTest','off')
+        plot(ydiodes,'k', 'HitTest','off');
+        plot(measured_spectrum, 'HitTest','off')
         xlabel('Våglängd [nm]')
-        ylabel('Effekt [W]')
+        ylabel('Effekt []')
         axis([400 1000 0 top_y*1.2])
         
         [x_cord, y_cord, button, axn] = ginputax(axes,1);
@@ -49,30 +53,43 @@ try
             end
             setappdata(handles.figure1, 'clickState' ,0);
             guidata(handles.figure1, handles);
+            disp('clicked outside of graph. Returning from manualAdjusment and setting clickState to 0');
             return;
         end
         
         
         if button == 1
-            manRaiseOne(handles, x_cord, measured_spectrum);
+            if debug
+                disp('left-click');
+            end
+            manRaiseOne(handles, x_cord, measured_spectrum,wanted_spectrum);
             
         elseif button == 2
-            RaiseTheBar(handles, measured_spectrum);
+            if debug
+                disp('middle-click');
+            end
+            %             RaiseTheBar(handles, measured_spectrum,wanted_spectrum);
+            RaiseAll(handles,measured_spectrum,wanted_spectrum);
             
             %If the user don't left-click or middle-click when she/he see the spikes, then go back
         else
-            
+            if debug
+                disp('neither left- nor middle-click');
+            end
             cla;
-            plot(measured_spectrum)
+            plot(wanted_spectrum,'color',[1 0 0]);
+            plot(measured_spectrum/max(measured_spectrum)*max(wanted_spectrum), 'HitTest','off')
             xlabel('Våglängd [nm]')
             ylabel('Effekt [W]')
             axis([400 1000 0 top_y*1.2])
-            clickState = 0;%Redundance?
+            clickState = 0;
             setappdata(handles.figure1, 'clickState' ,0);
             guidata(handles.figure1, handles);
             
         end
+        Simulator_on(handles, handles.Simulator_on)
         [measured_spectrum, ~] = getSpectrum(handles);
+        setappdata(handles.figure1, 'measured_spectrum' ,measured_spectrum);
     end
     guidata(handles.figure1, handles);
     
@@ -80,6 +97,6 @@ catch err
     if(strcmp(err.identifier, 'MATLAB:undefinedVarOrFunction'))
         uiwait(errordlg(err.message));
     end
-        rethrow(err);
+    rethrow(err);
 end
 end
