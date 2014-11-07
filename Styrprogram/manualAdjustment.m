@@ -13,40 +13,38 @@ try
     end
     
     while (clickState == 1)
-        
-        top_y = max(measured_spectrum);
-        
-        ydiodes(420) = top_y/4;
-        ydiodes(450) = top_y/4;
-        ydiodes(490) = top_y/4;
-        ydiodes(515) = top_y/4;
-        ydiodes(520) = top_y/4;
-        ydiodes(590) = top_y/4;
-        ydiodes(630) = top_y/4;
-        ydiodes(660) = top_y/4;
-        ydiodes(680) = top_y/4;
-        ydiodes(720) = top_y/4;
-        ydiodes(750) = top_y/4;
-        ydiodes(780) = top_y/4;
-        ydiodes(830) = top_y/4;
-        ydiodes(880) = top_y/4;
-        ydiodes(945) = top_y/4;
-        ydiodes(980) = top_y/4;
+                
+        d = 1/4;
+        ydiodes(420) = d;
+        ydiodes(450) = d;
+        ydiodes(490) = d;
+        ydiodes(515) = d;
+        ydiodes(520) = d;
+        ydiodes(590) = d;
+        ydiodes(630) = d;
+        ydiodes(660) = d;
+        ydiodes(680) = d;
+        ydiodes(720) = d;
+        ydiodes(750) = d;
+        ydiodes(780) = d;
+        ydiodes(830) = d;
+        ydiodes(880) = d;
+        ydiodes(945) = d;
+        ydiodes(980) = d;
         
         % Showing the diode spikes and the spectrum, left or right-click to proceed and right
         % click to go back
         cla;
-        plot(wanted_spectrum/2/max(wanted_spectrum)*max(measured_spectrum),'color',[1 0 0]);
-        %         plot(wanted_spectrum,'HitTest','off')
-        plot(ydiodes,'k', 'HitTest','off');
-        plot(measured_spectrum, 'HitTest','off')
-        xlabel('Våglängd [nm]')
-        ylabel('Effekt []')
-        axis([400 1000 0 top_y*1.2])
+        plot(wanted_spectrum/max(wanted_spectrum),'color',[1 0 0]);
+        plot(ydiodes,'k');
+        plot(measured_spectrum/max(measured_spectrum));
+        xlabel('Wavelength [nm]')
+        ylabel('Power [Arbitrary]')
+        axis([400 1000 0 1.2])
         
         [x_cord, y_cord, button, axn] = ginputax(axes,1);
         
-        if (x_cord < 0 || x_cord > 1000 || y_cord < 0 || y_cord > top_y*1.2)
+        if (x_cord < 0 || x_cord > 1000 || y_cord < 0 || y_cord > 1.2)
             if debug
                 disp(strcat('x_cord: ', num2str(x_cord)));
                 disp(strcat('y_cord: ', num2str(y_cord)));
@@ -62,13 +60,13 @@ try
             if debug
                 disp('left-click');
             end
+            
             manRaiseOne(handles, x_cord, measured_spectrum,wanted_spectrum);
             
         elseif button == 2
             if debug
                 disp('middle-click');
             end
-            %             RaiseTheBar(handles, measured_spectrum,wanted_spectrum);
             RaiseAll(handles,measured_spectrum,wanted_spectrum);
             
             %If the user don't left-click or middle-click when she/he see the spikes, then go back
@@ -77,16 +75,17 @@ try
                 disp('neither left- nor middle-click');
             end
             cla;
-            plot(wanted_spectrum,'color',[1 0 0]);
-            plot(measured_spectrum/max(measured_spectrum)*max(wanted_spectrum), 'HitTest','off')
-            xlabel('Våglängd [nm]')
-            ylabel('Effekt [W]')
-            axis([400 1000 0 top_y*1.2])
+            plot(wanted_spectrum/max(wanted_spectrum),'color',[1 0 0]);
+            plot(measured_spectrum/max(measured_spectrum))
+            xlabel('Wavelength [nm]')
+            ylabel('Power [Arbitrary]')
+            axis([400 1000 0 1.2])
             clickState = 0;
             setappdata(handles.figure1, 'clickState' ,0);
             guidata(handles.figure1, handles);
             
         end
+        cla;
         Simulator_on(handles, handles.Simulator_on)
         [measured_spectrum, ~] = getSpectrum(handles);
         setappdata(handles.figure1, 'measured_spectrum' ,measured_spectrum);

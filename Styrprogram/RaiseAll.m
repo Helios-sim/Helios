@@ -27,13 +27,12 @@ try
     %Know where the diodes are placed
     diodeplacements = [420 450 490 590 515 520 590 630 660 680 720 750 780 830 880 945 980];
     
-    top_y = max(wanted_spectrum);
     
     %Keep track on the diodes that are shining with maximum strength
     maxed = zeros(1,1000);
     for i = 1:16
         if (now_volt(i) >= 0.999*max_volt(i))
-            maxed(diodeplacements(i)) = top_y/4;
+            maxed(diodeplacements(i)) = 1/4;
         end
     end
     
@@ -54,18 +53,18 @@ try
     while button ~= 3
         %Plot all the stuff
         cla;
-        plot(measured_spectrum/max(measured_spectrum)*max(wanted_spectrum));
-        plot(wanted_spectrum,'r');
+        plot(measured_spectrum/max(measured_spectrum));
+        plot(wanted_spectrum/max(wanted_spectrum),'r');
         plot(maxed,'r')
         xlabel('Våglängd [nm]')
         ylabel('Effekt [Arbitrary]')
-        axis([400 1000 0 top_y*1.2])
+        axis([400 1000 0 1.2])
         
         
         % Add text and a click function
         plusFive = text(600, 0.1,'+5 percentage points','Color', adjust_color, 'BackgroundColor',backgroundcolor);
         minusFive = text(420, 0.1,'-5 percentage points','Color', adjust_color, 'BackgroundColor',backgroundcolor);
-        text(800, 0.1, strcat('+',num2str(5*changetimes),'%'),'Color', adjust_color, 'BackgroundColor',backgroundcolor);
+        text(800, 0.1, strcat('+',num2str(5*changetimes),'% points'),'Color', adjust_color, 'BackgroundColor',backgroundcolor);
         
         %Let the user click in the plot to move the intensities
         [x_cord, y_cord, button] = ginputax(axes,1);
@@ -77,7 +76,7 @@ try
             if (x_cord > cE(1) && x_cord < cE(1) + cE(3)) && (y_cord > cE(2) && y_cord < cE(2) + cE(4))
                 changetimes = changetimes - 1;
                 
-                %Check if the user clicked on the text "plus five"
+            %Check if the user clicked on the text "plus five"
             elseif (x_cord > sE(1) && x_cord < sE(1) + sE(3)) && (y_cord > sE(2) && y_cord < sE(2) + sE(4))
                 changetimes = changetimes + 1;
                 
@@ -87,8 +86,8 @@ try
             for i = 1:16
                 %Will any diode be maxed?
                 if saved_volt(i)+max_volt(i)*changetimes*5/100 > max_volt(i)*0.999
-                    now_volt(i) = max_volt(i)*0.999;
-                    maxed(diodeplacements(i)) = top_y/4;
+                    now_volt(i) = max_volt(i)*0.9999;
+                    maxed(diodeplacements(i)) = 1/4;
                     if debug
                         disp(['prepare to max diode: ' num2str(diodeplacements(i))]);
                     end
@@ -99,10 +98,10 @@ try
                         disp(['prepare to set diode '  num2str(diodeplacements(i)) ' to 0']);
                     end
                 else
-                    saved_volt(i) = now_volt(i)+max_volt(i)*changetimes*5/100;
+                    now_volt(i) = saved_volt(i)+max_volt(i)*changetimes*5/100;
                     maxed(diodeplacements(i)) = 0;
                     if debug
-                        disp(['preparing to changing diode: '  num2str(diodeplacements(i))]);
+                        disp(['preparing to change diode: '  num2str(diodeplacements(i))]);
                     end
                 end
             end
@@ -122,9 +121,10 @@ try
         error('calibration:manual:spectrumFault', 'Raising the bar resultet in a bad spectrum')
     else
         setappdata(handles.figure1, 'chosen_spectrum', now_volt);
+        guidata(handles.figure1, handles);
     end
     
-    guidata(handles.figure1, handles);
+    
 catch err
     
     if strcmp(err.identifier,'MATLAB:ginput:FigureDeletionPause')

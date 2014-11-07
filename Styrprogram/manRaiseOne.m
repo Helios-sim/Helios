@@ -5,7 +5,7 @@ try
     debug = getappdata(handles.figure1, 'debug_mode');
     
     if debug
-       disp('In manRaiseOne'); 
+        disp('In manRaiseOne');
     end
     
     button = 1;
@@ -20,46 +20,52 @@ try
     now_volt = ChaToWave(now_volt);
     max_volt = ChaToWave(max_volt);
     
-    top_y = max(measured_spectrum);
-    
-    %Scale the max_volt and now_volt vectors so they are about the same
-    %height as the spectrum in the plot.
-    scalefactor = max(measured_spectrum)/max_volt(chosen_diode);
+    %Used for the plot in the first iteration of the loop
+    y_cord = now_volt(chosen_diode)/max_volt(chosen_diode);
+    text_cord = y_cord;
     
     %Left-click around until you're done, but the spectrum
     %doesn't update until after right-click
     axes = handles.axes1;
+    
     while button ~= 3
-        cla;
-        plot(measured_spectrum);
-        plot(wanted_spectrum*scalefactor,'r');
-        plot(wavelength, now_volt(chosen_diode)*scalefactor, 'k*')
-        plot(wavelength, max_volt(chosen_diode)*scalefactor, 'k*')
-        axis([400 1000 0 top_y*1.2])
-        xlabel('Våglängd [nm]')
-        ylabel('Effekt [W]')
+        
+        %Determines where to put the marking for the present current
+        scalefactor = now_volt(chosen_diode)/max_volt(chosen_diode);
+        
+        %Set the text string and position
         if(now_volt(chosen_diode) == max_volt(chosen_diode))
             power = 'Max';
             powercolor = 'r';
+            text_cord = 1;
         else
-            power = [num2str(round(now_volt(chosen_diode)/max_volt(chosen_diode)*100)) ' %'];
+            power = [num2str(round(y_cord*100)) ' %'];
             powercolor = 'b';
+            text_cord = y_cord;
         end
         
+        cla;
+        plot(measured_spectrum/max(measured_spectrum));
+        plot(wanted_spectrum/max(wanted_spectrum),'r');
+        plot(wavelength, 1, 'k*')
+        plot(wavelength, text_cord, 'k*')
+        axis([400 1000 0 1.2])
+        xlabel('Wavelength [nm]')
+        ylabel('Power [Arbitrary]')
+        
+        
         % Add text
-        text(wavelength + 15, now_volt(chosen_diode)*scalefactor, power, 'Color', powercolor);
-        text(wavelength, max_volt(chosen_diode)*scalefactor*1.1, strcat(num2str(wavelength), 'nm'),'Color','b');
+        text(wavelength + 15, text_cord, power, 'Color', powercolor);
+        text(wavelength, 1.15, strcat(num2str(wavelength), 'nm'),'Color','b');
         
         [x_cord, y_cord, button] = ginputax(axes,1);
-        
-        if (x_cord < 0 || x_cord > 1000 || y_cord < 0 || y_cord > top_y*1.2)
+        if debug
+            disp(strcat('x_cord: ', num2str(x_cord)));
+            disp(strcat('y_cord: ', num2str(y_cord)));
+        end
+        if (x_cord < 0 || x_cord > 1000 || y_cord < 0 || y_cord > 1.2)
             if debug
-                disp(strcat('x_cord: ', num2str(x_cord)));
-                disp(strcat('y_cord: ', num2str(y_cord)));
-            end
-            if y_cord < 0 && button ~= 3
-                now_volt(chosen_diode) = 0;
-                setappdata(handles.figure1, 'chosen_spectrum', now_volt);
+                disp('click was outside the image')
             end
             setappdata(handles.figure1, 'clickState' ,0);
             guidata(handles.figure1, handles);
@@ -68,10 +74,13 @@ try
         
         if (button ~= 3)
             %You cannot set the voltage above max or below zero
-            if y_cord/scalefactor > max_volt(chosen_diode)
+            if y_cord > 1
+                if debug
+                    disp('trying to set diode above max')
+                end
                 now_volt(chosen_diode) = max_volt(chosen_diode);
             else
-                now_volt(chosen_diode) = y_cord/scalefactor;
+                now_volt(chosen_diode) = y_cord;
             end
         end
     end
@@ -81,11 +90,12 @@ try
     
     if failtest(now_volt)
         error('calibration:manual:spectrumFault', 'Manual adjustment resultet in a bad spectrum')
+    else
+        %Establish the new voltages
+        setappdata(handles.figure1, 'chosen_spectrum', now_volt);
+        guidata(handles.figure1, handles);
     end
     
-    %Establish the new voltages
-    setappdata(handles.figure1, 'chosen_spectrum', now_volt);
-    guidata(handles.figure1, handles);
     
 catch err
     if(strcmp(err.identifier, 'MATLAB:ginput:FigureDeletionPause'))

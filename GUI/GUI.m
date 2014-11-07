@@ -531,18 +531,18 @@ try
     axes(handles.axes1);
     cla;
     %Scales the measured spectrum so both can be seen in the same plot
-    plot(wanted_spectrum/max(wanted_spectrum)*max(measured_spectrum),'color',[1 0 0]);
+    cla;
+    plot(wanted_spectrum/max(wanted_spectrum),'color',[1 0 0]);
     
     axis([400 1000 0 max(wanted_spectrum)*1.2])
         
     end
     
     if success
-
-        plot(measured_spectrum, 'HitTest','off');
+        plot(measured_spectrum/max(measured_spectrum));
         xlabel('Wavelength [nm]')
-        ylabel('Power [W]')
-        axis([400 1000 0 max(measured_spectrum)*1.2])
+        ylabel('Power [Arbitrary]')
+        axis([400 1000 0 1.2])
 
         setappdata(handles.figure1, 'clickState', 0);
         setappdata(handles.figure1, 'measured_spectrum', measured_spectrum);
@@ -578,12 +578,11 @@ try
         manualAdjustment(handles);
         measured_spectrum = getappdata(handles.figure1,'measured_spectrum');
         wanted_spectrum = getappdata(handles.figure1,'wanted_spectrum');
-        plot(wanted_spectrum/2/max(wanted_spectrum)*min(measured_spectrum),'color',[1 0 0]);
-        plot(measured_spectrum, 'HitTest','off')
+        plot(wanted_spectrum/max(wanted_spectrum),'color',[1 0 0]);
+        plot(measured_spectrum/max(measured_spectrum), 'HitTest','off')
         xlabel('Våglängd [nm]')
         ylabel('Effekt [Arbitrary]')
-        top_y = max(measured_spectrum);
-        axis([400 1000 0 top_y*1.2])
+        axis([400 1000 0 1.2])
     end
 catch err
     uiwait(errordlg(err.message));
