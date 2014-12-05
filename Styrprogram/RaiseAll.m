@@ -101,7 +101,7 @@ try
                     now_volt(i) = saved_volt(i)+max_volt(i)*changetimes*5/100;
                     maxed(diodeplacements(i)) = 0;
                     if debug
-                        disp(['preparing to change diode: '  num2str(diodeplacements(i))]);
+                        disp(['preparing to increase: '  num2str(diodeplacements(i)) ' with ' num2str(changetimes*5) ' percentage points of max']);
                     end
                 end
             end
