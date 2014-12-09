@@ -631,7 +631,7 @@ try
     delete(hObject);
 catch err
     
-    uiwait(errordlg(err.message));
+    disp(errordlg(err.message));
     
 end
 
