@@ -188,23 +188,6 @@ end
 guidata(handles.figure1, handles);
 
 
-%% --- Executes on button press in Help_button.
-function Help_button_Callback(hObject, eventdata, handles)
-% hObject    handle to Help_button (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Checks if user manual excists and opens it, otherwise displays an error
-% message
-debug = getappdata(handles.figure1, 'debug_mode');
-if exist('user_manual.pdf', 'file')==2
-    if debug
-        disp('opening user manual');
-    end
-    open('user_manual.pdf');
-else
-    helpdlg('Användarmanualen kunde inte öppnas, filen kunde inte hittas');
-end
 
 
 %% --- Exectues when the From_IV tab is altered
@@ -489,25 +472,18 @@ function Simulator_on_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 handles = guidata(handles.figure1);
 try
-    debug = getappdata(handles.figure1, 'debug_mode');
     button_state = get(hObject, 'Value');
-    if debug
-        disp('button_state: ');
-        disp(button_state);
-    end
     if button_state == get(hObject, 'Max')
-        if debug
-            disp('simulator turning on');
-        end
-        set(hObject, 'String', 'Switch off');
-        Simulator_on(handles);
+        Simulator_on(handles,hObject);
     else
+        shutdown_simulator(handles);
+        debug = getappdata(handles.figure1, 'debug_mode');
         if debug
             disp('simulator turning off');
         end
-        shutdown_simulator(handles);
         set(hObject, 'String', 'Switch on');
     end
+    
 catch err
     shutdown_simulator(handles);
     uiwait(errordlg(strcat(err.identifier, ': ', err.message)));
@@ -528,29 +504,38 @@ try
     
     [measured_spectrum, success] = getSpectrum(handles);
     
-    axes(handles.axes1);
-    cla;
-    plot(wanted_spectrum*0.7/max(wanted_spectrum)*max(measured_spectrum),'color',[1 0 0]);
-    axis([400 1000 0 max(wanted_spectrum)*1.2])
-        
+
+%     axes(handles.axes1);
+%     cla;
+%     plot(wanted_spectrum*0.7/max(wanted_spectrum)*max(measured_spectrum),'color',[1 0 0]);
+%     axis([400 1000 0 max(wanted_spectrum)*1.2])
+%         
     
     
+
     if debug
         disp('In showSpectrum: ');
-        disp('spectrum: ');
+        disp('size of measured spectrum: ');
         disp(size(measured_spectrum));
         disp('clickState: ');
         disp(getappdata(handles.figure1, 'clickState'));
         
+        axes(handles.axes1);
+        cla;
+        %Scales the measured spectrum so both can be seen in the same plot
+        cla;
+        plot(wanted_spectrum/max(wanted_spectrum),'color',[1 0 0]);
+        
+        axis([400 1000 0 max(wanted_spectrum)*1.2])
+        
     end
     
     if success
-        hold on
-        plot(measured_spectrum);
+        plot(measured_spectrum/max(measured_spectrum));
         xlabel('Wavelength [nm]')
-        ylabel('Power [W]')
-        axis([400 1000 0 max(measured_spectrum)*1.2])
-        hold off
+        ylabel('Power [Arbitrary]')
+        axis([400 1000 0 1.2])
+        
         setappdata(handles.figure1, 'clickState', 0);
         setappdata(handles.figure1, 'measured_spectrum', measured_spectrum);
     end
@@ -576,15 +561,24 @@ try
     clickState = getappdata(handles.figure1, 'clickState');
     if debug
         disp('in axes1_buttonDownFcn');
+        disp('clickState: ');
         disp(clickState);
     end
     if (clickState == 0)
         setappdata(handles.figure1, 'clickState', 1);
         guidata(handles.figure1, handles);
         manualAdjustment(handles);
+        measured_spectrum = getappdata(handles.figure1,'measured_spectrum');
+        wanted_spectrum = getappdata(handles.figure1,'wanted_spectrum');
+        plot(wanted_spectrum/max(wanted_spectrum),'color',[1 0 0]);
+        plot(measured_spectrum/max(measured_spectrum), 'HitTest','off')
+        xlabel('Våglängd [nm]')
+        ylabel('Effekt [Arbitrary]')
+        axis([400 1000 0 1.2])
     end
 catch err
-    
+    uiwait(errordlg(err.message));
+    rethrow(err);
 end
 
 
@@ -646,7 +640,7 @@ try
     delete(hObject);
 catch err
     
-    uiwait(errordlg(err.message));
+    disp(errordlg(err.message));
     
 end
 
@@ -695,10 +689,87 @@ try
     end
     
 catch err
-        shutdown_simulator(handles);
-        uiwait(errordlg(strcat(err.identifier, ': ', err.message)));
-        rethrow(err);
+    shutdown_simulator(handles);
+    uiwait(errordlg(strcat(err.identifier, ': ', err.message)));
+    rethrow(err);
 end
 guidata(handles.figure1, handles);
 
-%% End
+
+
+
+%% --- Executes on button press in Save_button.
+function Save_button_Callback(hObject, eventdata, handles)
+% hObject    handle to Save_button (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+handles = guidata(handles.figure1);
+try
+    debug = getappdata(handles.figure1, 'debug_mode');
+    
+    if debug
+        disp('Save_button_Callback: Saving spectrum');
+    end
+    savespectrum = getappdata(handles.figure1, 'chosen_spectrum');
+    %     [savespectrum, path] = uiputfile('*.mat','Save Spectrum As');
+    
+    
+    uisave('savespectrum','')
+    
+catch err
+    shutdown_simulator(handles);
+    uiwait(errordlg(strcat(err.identifier, ': ', err.message)));
+    rethrow(err);
+end
+
+
+
+% --- Executes on button press in Open_Spectrum.
+function Open_Spectrum_Callback(hObject, eventdata, handles)
+% hObject    handle to Open_Spectrum (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+try
+    debug = getappdata(handles.figure1, 'debug_mode');
+    
+    if debug
+        disp('Open_Spectrum_Callback: Opening spectrum');
+    end
+
+    fileToRead1 = uigetfile('*.mat','Choose Spectrum');
+%     spectrum = load(Filename,'savespectrum');
+    
+    %IMPORTFILE(FILETOREAD1)
+%  Imports data from the specified file
+%  FILETOREAD1:  file to read
+
+%  Auto-generated by MATLAB on 11-Nov-2014 18:35:54
+
+% Import the file
+newData1 = load('-mat', fileToRead1);
+
+% Create new variables in the base workspace from those fields.
+vars = fieldnames(newData1);
+for i = 1:length(vars)
+    assignin('base', vars{i}, newData1.(vars{i}));
+    disp('vars{i})')
+    vars{i}
+end
+    
+    fieldnames(newData1)
+    newData1
+    savespectrum
+    
+    
+%     setappdata(handles.figure1,'chosen_spectrum',spectrum);
+
+    if debug
+        
+        
+    end
+    
+catch err
+    shutdown_simulator(handles);
+    uiwait(errordlg(strcat(err.identifier, ': ', err.message)));
+    rethrow(err);
+end

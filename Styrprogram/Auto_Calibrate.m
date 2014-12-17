@@ -2,7 +2,7 @@ function [ tight, new_daq_voltage, success ] = Auto_Calibrate(handles, slack)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 try
-    Simulator_on(handles);
+    Simulator_on(handles,handles.Simulator_on);
     tight = false;
     new_daq_voltage = zeros(1,16);
     
