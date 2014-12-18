@@ -1,18 +1,17 @@
 function manRaiseOne( handles, x_cord, measured_spectrum,wanted_spectrum )
+%manRaiseOne allows the user to manually change the intensity for one diode at a time
+
 try
     handles = guidata(handles.figure1);
-    %manRaiseOne allows the user to manually change the intensity for one diode at a time
     debug = getappdata(handles.figure1, 'debug_mode');
-    
     if debug
         disp('In manRaiseOne');
     end
-    
-    button = 1;
-    
+  
+    %Find the diode which has been selected by the user
     [wavelength, chosen_diode] = FindClickedDiode ( x_cord );
     
-    %Aqcuire the maximum allowed voltages and the voltages we have now
+    %Acquire the maximum allowed voltages and the voltages we have now
     now_volt = getappdata(handles.figure1, 'chosen_spectrum');
     max_volt = getappdata(handles.figure1, 'max_voltage');
     
@@ -20,14 +19,15 @@ try
     now_volt = ChaToWave(now_volt);
     max_volt = ChaToWave(max_volt);
     
-    %Used for the plot in the first iteration of the loop
-    y_cord = now_volt(chosen_diode)/max_volt(chosen_diode);
-    text_cord = y_cord;
+    %Used for the plot in the first iteration of the loop. Later, in the while loop below, the y_cord
+    %will be decided by using the mouses left button
+    y_cord = now_volt(chosen_diode)/max_volt(chosen_diode);    
     
-    %Left-click around until you're done, but the spectrum
-    %doesn't update until after right-click
     axes = handles.axes1;
     
+    button = 1;
+    %Left-click around until you're done, but the spectrum
+    %doesn't update until after right-click
     while button ~= 3
         
         %Determines where to put the marking for the present current
@@ -45,6 +45,7 @@ try
         end
         
         cla;
+        %The top will be at 1 for both the measured and the wanted spectrums
         plot(measured_spectrum/max(measured_spectrum));
         plot(wanted_spectrum/max(wanted_spectrum),'r');
         plot(wavelength, 1, 'k*')
@@ -52,8 +53,7 @@ try
         axis([400 1000 0 1.2])
         xlabel('Wavelength [nm]')
         ylabel('Power [Arbitrary]')
-        
-        
+                
         % Add text
         text(wavelength + 15, text_cord, power, 'Color', powercolor);
         text(wavelength, 1.15, strcat(num2str(wavelength), 'nm'),'Color','b');
@@ -63,8 +63,7 @@ try
             disp(strcat('x_cord: ', num2str(x_cord)));
             disp(strcat('y_cord: ', num2str(y_cord)));
         end
-        if (x_cord < 0 || x_cord > 1000 || y_cord < 0 || y_cord > 1.2)
-            if debug
+          if debug
                 disp('click was outside the image')
             end
             setappdata(handles.figure1, 'clickState' ,0);
@@ -80,7 +79,7 @@ try
                 end
                 now_volt(chosen_diode) = max_volt(chosen_diode);
             else
-                now_volt(chosen_diode) = y_cord;
+                now_volt(chosen_diode) = y_cord*max_volt(chosen_diode);
             end
         end
     end
