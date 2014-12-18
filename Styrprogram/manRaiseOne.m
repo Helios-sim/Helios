@@ -7,7 +7,7 @@ try
     if debug
         disp('In manRaiseOne');
     end
-  
+    
     %Find the diode which has been selected by the user
     [wavelength, chosen_diode] = FindClickedDiode ( x_cord );
     
@@ -21,7 +21,7 @@ try
     
     %Used for the plot in the first iteration of the loop. Later, in the while loop below, the y_cord
     %will be decided by using the mouses left button
-    y_cord = now_volt(chosen_diode)/max_volt(chosen_diode);    
+    y_cord = now_volt(chosen_diode)/max_volt(chosen_diode);
     
     axes = handles.axes1;
     
@@ -29,9 +29,6 @@ try
     %Left-click around until you're done, but the spectrum
     %doesn't update until after right-click
     while button ~= 3
-        
-        %Determines where to put the marking for the present current
-        scalefactor = now_volt(chosen_diode)/max_volt(chosen_diode);
         
         %Set the text string and position
         if(now_volt(chosen_diode) == max_volt(chosen_diode))
@@ -53,7 +50,7 @@ try
         axis([400 1000 0 1.2])
         xlabel('Wavelength [nm]')
         ylabel('Power [Arbitrary]')
-                
+        
         % Add text
         text(wavelength + 15, text_cord, power, 'Color', powercolor);
         text(wavelength, 1.15, strcat(num2str(wavelength), 'nm'),'Color','b');
@@ -63,7 +60,8 @@ try
             disp(strcat('x_cord: ', num2str(x_cord)));
             disp(strcat('y_cord: ', num2str(y_cord)));
         end
-          if debug
+        if (x_cord < 0 || x_cord > 1000 || y_cord < 0 || y_cord > 1.2)
+            if debug
                 disp('click was outside the image')
             end
             setappdata(handles.figure1, 'clickState' ,0);
@@ -71,7 +69,7 @@ try
             return;
         end
         
-        if (button ~= 3)
+        if (button == 3)
             %You cannot set the voltage above max or below zero
             if y_cord > 1
                 if debug
@@ -94,7 +92,7 @@ try
         setappdata(handles.figure1, 'chosen_spectrum', now_volt);
         guidata(handles.figure1, handles);
     end
-    
+   
     
 catch err
     if(strcmp(err.identifier, 'MATLAB:ginput:FigureDeletionPause'))
@@ -102,5 +100,4 @@ catch err
     end
     rethrow(err);
 end
-
 
