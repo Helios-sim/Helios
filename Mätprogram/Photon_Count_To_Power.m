@@ -13,9 +13,6 @@ h = 6.62606957*10^-34;
 %Speed of light (m/s)
 c = 299792458;
 
-photon_count
-integration_time
-
 powerspectrum = zeros(1,length(photon_count));
 for lambda = 1:length(photon_count)
     

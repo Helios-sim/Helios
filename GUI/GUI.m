@@ -706,17 +706,18 @@ function Save_button_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Saves the 16 voltage values
+% Saves the 16 voltage values (user spectrum)
 handles = guidata(handles.figure1);
 try
     debug = getappdata(handles.figure1, 'debug_mode');
-    
-    if debug
-        disp('Save_button_Callback: Saving spectrum');
-    end
     savespectrum = getappdata(handles.figure1, 'chosen_spectrum');
     
-    uisave('savespectrum','../SparadeSpektrum/')
+    if debug
+        disp('Save_button_Callback: Saving spectrum')
+        disp(savespectrum)
+    end
+        
+    uisave('savespectrum','SparadeSpektrum/')
     
 catch err
     shutdown_simulator(handles);
@@ -735,12 +736,12 @@ function Open_Spectrum_Callback(hObject, eventdata, handles)
 % Loads the 16 voltage values
 try
     debug = getappdata(handles.figure1, 'debug_mode');
-    
+    uiopen('SparadeSpektrum/*.mat');
     if debug
         disp('Open_Spectrum_Callback: Opening spectrum');
+        disp(savespectrum)
     end
-
-    uiopen('../SparadeSpektrum/*.mat');
+    
     setappdata(handles.figure1,'chosen_spectrum',savespectrum);
 
 catch err

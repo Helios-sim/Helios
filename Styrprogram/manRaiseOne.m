@@ -77,6 +77,7 @@ try
                 end
                 now_volt(chosen_diode) = max_volt(chosen_diode);
             else
+                disp(['setting diode to ' num2str(y_cord) ' of max']);
                 now_volt(chosen_diode) = y_cord*max_volt(chosen_diode);
             end
         end
