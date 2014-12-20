@@ -69,19 +69,25 @@ try
             return;
         end
         
-        if (button == 3)
+% Prepare to set the voltages, but do not let the right-click determine the voltage. '
+% The right-click is only used to confirm what the user chose with previous clicks
+        if button ~= 3 
             %You cannot set the voltage above max or below zero
             if y_cord > 1
                 if debug
-                    disp('trying to set diode above max')
+                    disp('Clicking too far up in the plot. Preparing to set to max')
                 end
                 now_volt(chosen_diode) = max_volt(chosen_diode);
             else
-                disp(['setting diode to ' num2str(y_cord) ' of max']);
+                disp(['Preparing to setting diode to ' num2str(y_cord) ' of max']);
                 now_volt(chosen_diode) = y_cord*max_volt(chosen_diode);
             end
         end
     end
+    
+    
+    
+    
     
     %Change back from voltages in wavelength orders to channel orders
     now_volt = WaveToCha(now_volt);
@@ -92,8 +98,11 @@ try
         %Establish the new voltages
         setappdata(handles.figure1, 'chosen_spectrum', now_volt);
         guidata(handles.figure1, handles);
+        if debug
+            disp('New voltages established')
+        end
     end
-   
+    
     
 catch err
     if(strcmp(err.identifier, 'MATLAB:ginput:FigureDeletionPause'))

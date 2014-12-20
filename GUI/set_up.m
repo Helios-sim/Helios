@@ -57,6 +57,8 @@ try
     detail_level = 2;
     %In channel order
     % diode wl =  [720 980 830 590 520 490 750 660 630 780 450 420 880 945 680 515]
+%     If the factor 0.9 after "max_current" is changed, make sure to also
+%     change the factor after "max_I" in the file failtest.m
     max_current = [600 500 800 350 350 250 800 350 350 800 350 350 1000 1000 600 350]*0.9*10^-3;
     amp_factor = [62   62  100 34  34 27.5 100 34  35  100 34  34  122 122 62  34]*10^-3;
     max_voltage = max_current./amp_factor;
