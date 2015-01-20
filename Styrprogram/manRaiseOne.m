@@ -89,7 +89,7 @@ try
                 filter = zeros(1,16);
                 filter(chosen_diode) = 1;
                 filter = WaveToCha(filter);
-                setappdata(handle.figure1,'filter',filter);
+                setappdata(handles.figure1,'filter',filter);
             end
         end
     end

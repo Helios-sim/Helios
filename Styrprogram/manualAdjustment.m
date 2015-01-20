@@ -91,10 +91,12 @@ try
             guidata(handles.figure1, handles);
             
         end
-        cla;
-        Simulator_on(handles, handles.Simulator_on)
-        [measured_spectrum, ~] = getSpectrum(handles);
-        setappdata(handles.figure1, 'measured_spectrum' ,measured_spectrum);
+        if spectCon
+            cla;
+            Simulator_on(handles, handles.Simulator_on)
+            measured_spectrum = getSpectrum(handles);
+            setappdata(handles.figure1, 'measured_spectrum' ,measured_spectrum);
+        end
     end
     setappdata(handles.figure1,'filter',ones(1,16));
     guidata(handles.figure1, handles);

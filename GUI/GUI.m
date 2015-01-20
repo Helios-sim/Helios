@@ -526,10 +526,9 @@ try
         xlabel('Wavelength [nm]')
         ylabel('Power [not to scale]')
         axis([400 1000 0 1.2])
-        
-        setappdata(handles.figure1, 'clickState', 0);
         setappdata(handles.figure1, 'measured_spectrum', measured_spectrum);
     end
+        setappdata(handles.figure1, 'clickState', 0);
     
     if debug
         disp(['clickState: ' num2str(getappdata(handles.figure1, 'clickState'))]);
