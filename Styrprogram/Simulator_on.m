@@ -6,6 +6,7 @@ try
     button_state = get(hObject, 'Value');
     session = getappdata(handles.figure1,'session');
     chosen_spectrum = getappdata(handles.figure1,'chosen_spectrum');
+    filter = getappdata(handles.figure1, 'filter');
     
     if debug
         disp('button_state: ');
@@ -13,10 +14,12 @@ try
         disp('simulator turning on');
         disp('simulating spectrum:');
         disp(chosen_spectrum);
+        disp(filter);
     end
     
     set(hObject, 'String', 'Switch off');
     set(hObject, 'Value', get(hObject, 'Max'));
+    chosen_spectrum = chosen_spectrum.*filter;
     
     if failtest(chosen_spectrum)
         error('runtime:spectrumFault', 'The chosen spectrum contains illegal voltage levels');

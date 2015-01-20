@@ -502,17 +502,8 @@ try
     debug = getappdata(handles.figure1, 'debug_mode');
     wanted_spectrum = getappdata(handles.figure1, 'wanted_spectrum');
     
-    [measured_spectrum, success] = getSpectrum(handles);
+    measured_spectrum = getSpectrum(handles);
     
-
-%     axes(handles.axes1);
-%     cla;
-%     plot(wanted_spectrum*0.7/max(wanted_spectrum)*max(measured_spectrum),'color',[1 0 0]);
-%     axis([400 1000 0 max(wanted_spectrum)*1.2])
-%         
-    
-    
-
     if debug
         disp('In showSpectrum: ');
         disp('size of measured spectrum: ');
@@ -529,11 +520,11 @@ try
         axis([400 1000 0 max(wanted_spectrum)*1.2])
         
     end
-    
-    if success
+    spectCon = getappdata(handles.figure1,'spectCon');
+    if spectCon
         plot(measured_spectrum/max(measured_spectrum));
         xlabel('Wavelength [nm]')
-        ylabel('Power [Arbitrary]')
+        ylabel('Power [not to scale]')
         axis([400 1000 0 1.2])
         
         setappdata(handles.figure1, 'clickState', 0);
@@ -573,7 +564,7 @@ try
         plot(wanted_spectrum/max(wanted_spectrum),'color',[1 0 0]);
         plot(measured_spectrum/max(measured_spectrum), 'HitTest','off')
         xlabel('Våglängd [nm]')
-        ylabel('Effekt [Arbitrary]')
+        ylabel('Effekt [not to scale]')
         axis([400 1000 0 1.2])
     end
 catch err

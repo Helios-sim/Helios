@@ -1,4 +1,4 @@
-function [spectrumdata, success] = getSpectrum(handles)
+function spectrumdata = getSpectrum(handles)
 try
     %getSpectrum aqcuires a spectral scan from the connected spectrometer if
     %one is connected
@@ -76,7 +76,7 @@ try
     %IntegrationTime is measured in microseconds
     spectrumdata = Photon_Count_To_Power(spectrumdata, integrationTime*10^-6);
     
-    success = true;
+    setappdata(handles.figure1,'spectCon',true);
     
     %% Cleanup
     disconnect(spectrometerObj);
@@ -92,9 +92,8 @@ catch err
     
     if strcmp(err.identifier, 'instrument:connect:opfailed')
         
-        uiwait(errordlg('Failed to connect to spectrometer'));
-        spectrumdata = ones(1,1000);
-        success = false;
+        spectrumdata = zeros(1,1000);
+        setappdata(handles.figure1,'spectCon',false);
         return;
     else
         rethrow(err);

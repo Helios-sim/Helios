@@ -4,6 +4,7 @@ function manRaiseOne( handles, x_cord, measured_spectrum,wanted_spectrum )
 try
     handles = guidata(handles.figure1);
     debug = getappdata(handles.figure1, 'debug_mode');
+    spectCon = getappdata(handles.figure1, 'spectCon');
     if debug
         disp('In manRaiseOne');
     end
@@ -44,12 +45,14 @@ try
         cla;
         %The top will be at 1 for both the measured and the wanted spectrums
         plot(measured_spectrum/max(measured_spectrum));
-        plot(wanted_spectrum/max(wanted_spectrum),'r');
+        if spectCon
+            plot(wanted_spectrum/max(wanted_spectrum),'r');
+        end
         plot(wavelength, 1, 'k*')
         plot(wavelength, text_cord, 'k*')
         axis([400 1000 0 1.2])
         xlabel('Wavelength [nm]')
-        ylabel('Power [Arbitrary]')
+        ylabel('Power [not to scale]')
         
         % Add text
         text(wavelength + 15, text_cord, power, 'Color', powercolor);
@@ -81,6 +84,12 @@ try
             else
                 disp(['Preparing to setting diode to ' num2str(y_cord) ' of max']);
                 now_volt(chosen_diode) = y_cord*max_volt(chosen_diode);
+            end
+            if button == 2
+                filter = zeros(1,16);
+                filter(chosen_diode) = 1;
+                filter = WaveToCha(filter);
+                setappdata(handle.figure1,'filter',filter);
             end
         end
     end

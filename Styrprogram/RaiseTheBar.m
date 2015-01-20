@@ -5,6 +5,7 @@ try
     handles = guidata(handles.figure1);
     
     debug = getappdata(handles.figure1, 'debug_mode');
+    spectCon = getappdata(handles.figure1,'spectCon');
     if debug
         disp('In RaiseTheBar');
     end
@@ -82,7 +83,9 @@ try
     while button ~= 3
         %Plot all the stuff
         cla;
-        plot(measured_spectrum/max(measured_spectrum)*max(wanted_spectrum));
+        if spectCon
+            plot(measured_spectrum/max(measured_spectrum)*max(wanted_spectrum));
+        end
         plot(wanted_spectrum,'r');
         plot([400, 1000], [present_bar, present_bar]*scale, 'Color', start_color)
         plot([400, 1000], [clean_bar, clean_bar]*scale, 'Color', clean_color)
@@ -166,13 +169,5 @@ try
     guidata(handles.figure1, handles);
 catch err
     rethrow(err);
-end
-
-
-function textClicked(clickedString, selectClean, selectStart)
-if strcmp(clickedString,'selectClean')
-    selectClean = 1;
-elseif strcmp(clickedString, 'selectStart')
-    selectStart = 1;
 end
 

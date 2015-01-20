@@ -3,6 +3,7 @@ try
     handles = guidata(handles.figure1);
     debug = getappdata(handles.figure1, 'debug_mode');
     clickState = getappdata(handles.figure1, 'clickState');
+    spectCon = getappdata(handles.figure1,'spectCon');
     measured_spectrum = getappdata(handles.figure1, 'measured_spectrum');
     wanted_spectrum = getappdata(handles.figure1, 'wanted_spectrum');
     axes = handles.axes1;
@@ -13,7 +14,7 @@ try
     end
     
     while (clickState == 1)
-                
+        
         d = 1/4;
         ydiodes(420) = d;
         ydiodes(450) = d;
@@ -37,7 +38,9 @@ try
         cla;
         plot(wanted_spectrum/max(wanted_spectrum),'color',[1 0 0]);
         plot(ydiodes,'k');
-        plot(measured_spectrum/max(measured_spectrum));
+        if spectCon
+            plot(measured_spectrum/max(measured_spectrum));
+        end
         xlabel('Wavelength [nm]')
         ylabel('Power [Arbitrary]')
         axis([400 1000 0 1.2])
@@ -76,12 +79,15 @@ try
             end
             cla;
             plot(wanted_spectrum/max(wanted_spectrum),'color',[1 0 0]);
-            plot(measured_spectrum/max(measured_spectrum))
+            if spectCon
+                plot(measured_spectrum/max(measured_spectrum))
+            end
             xlabel('Wavelength [nm]')
             ylabel('Power [Arbitrary]')
             axis([400 1000 0 1.2])
             clickState = 0;
             setappdata(handles.figure1, 'clickState' ,0);
+            
             guidata(handles.figure1, handles);
             
         end
@@ -90,6 +96,7 @@ try
         [measured_spectrum, ~] = getSpectrum(handles);
         setappdata(handles.figure1, 'measured_spectrum' ,measured_spectrum);
     end
+    setappdata(handles.figure1,'filter',ones(1,16));
     guidata(handles.figure1, handles);
     
 catch err

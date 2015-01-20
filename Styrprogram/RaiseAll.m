@@ -4,6 +4,7 @@ try
     handles = guidata(handles.figure1);
     
     debug = getappdata(handles.figure1, 'debug_mode');
+    spectCon = getappdata(handles.figure1, 'spectCon');
     if debug
         disp('In RaiseAll');
     end
@@ -53,11 +54,13 @@ try
     while button ~= 3
         %Plot all the stuff
         cla;
-        plot(measured_spectrum/max(measured_spectrum));
         plot(wanted_spectrum/max(wanted_spectrum),'r');
+        if spectCon
+            plot(measured_spectrum/max(measured_spectrum));
+        end
         plot(maxed,'r')
         xlabel('Våglängd [nm]')
-        ylabel('Effekt [Arbitrary]')
+        ylabel('Effekt [not to scale]')
         axis([400 1000 0 1.2])
         
         

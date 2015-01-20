@@ -90,6 +90,8 @@ try
     setappdata(handles.figure1, 'max_voltage', max_voltage);
     setappdata(handles.figure1, 'clickState', -1);
     setappdata(handles.figure1, 'measured_spectrum', []);
+    setappdata(handles.figure1, 'filter', ones(1,16));
+    setappdata(handles.figure1, 'spectCon', false);
     
     wanted_spectrum = ImportRawSpectrum('AM15.spec');
     setappdata(handles.figure1, 'wanted_spectrum', wanted_spectrum*0.9);
