@@ -71,19 +71,9 @@ try
     %setting up the rest of the user data and storing everything in the gui
     %appdata and checking if the chosen spectrum is allowed to begin with
     setappdata(handles.figure1, 'session', session);
-    setappdata(handles.figure1, 'from_iv', -1);
-    setappdata(handles.figure1, 'to_iv', 1);
-    setappdata(handles.figure1, 'step_iv', 16300);
-    setappdata(handles.figure1, 'Jsc', 1);
-    setappdata(handles.figure1, 'Voc', 1);
-    setappdata(handles.figure1, 'FF', 1);
-    setappdata(handles.figure1, 'eff', 0);
-    setappdata(handles.figure1, 'illuminated_area', 25);
-    setappdata(handles.figure1, 'R', 10);
-    setappdata(handles.figure1, 'Pin', 1);
     setappdata(handles.figure1, 'measurement_type', 'specificSpectrum');
     setappdata(handles.figure1, 'detail_level', detail_level);
-    setappdata(handles.figure1, 'debug_mode', true);
+    setappdata(handles.figure1, 'debug_mode', false);
     setappdata(handles.figure1, 'spectrum_integration_time', 100000*detail_level);
     setappdata(handles.figure1, 'max_current', max_current);
     setappdata(handles.figure1, 'amp_factor', amp_factor);
@@ -93,7 +83,7 @@ try
     setappdata(handles.figure1, 'filter', ones(1,16));
     setappdata(handles.figure1, 'spectCon', false);
     
-    wanted_spectrum = ImportRawSpectrum('AM15.spec');
+    wanted_spectrum = ImportRawSpectrum('SparadeSpektrum/AM15.spec');
     setappdata(handles.figure1, 'wanted_spectrum', wanted_spectrum*0.9);
     
     AM1_5 = 0.9*[8.60808459859326 6.84331797235023 5.16302198319328 9 8.53835294117647 7.99056000000000 3.78514285714286 7.05881866125761 9 2.56731428571429 5.20588235294118 5.18823529411765 6.55737704918033 1.52559384409502 8.35009509352128 8.53835294117647];

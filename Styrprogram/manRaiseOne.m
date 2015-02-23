@@ -115,7 +115,7 @@ try
     
 catch err
     if(strcmp(err.identifier, 'MATLAB:ginput:FigureDeletionPause'))
-        disp(errordlg(err.message))
+        errordlg(err.message)
     end
     rethrow(err);
 end

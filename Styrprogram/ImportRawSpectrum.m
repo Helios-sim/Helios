@@ -5,7 +5,7 @@ try
     spectrum = [zeros(1,399) spectrum']';
 
 catch err
-    uiwait(errdlg(err.message));
+    uiwait(errordlg(err.message));
     rethrow(err);
 end
 end
